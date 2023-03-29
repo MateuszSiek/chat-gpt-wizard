@@ -1,7 +1,9 @@
 import {HijackButton, HijackKeyboardEvents} from "./button-hijack";
 import {localStorage} from "../utils/local-storage";
+import {render} from "preact";
+import Browser from "webextension-polyfill";
 
-console.info('chrome-ext template-react-ts content script1234')
+console.info('chrome-ext template-react-ts content scrip')
 
 localStorage.changeStream
     .subscribe((change) => {
@@ -17,7 +19,6 @@ const handleButtonChange = (element: HTMLButtonElement) => {
         console.log('Element changed:', element);
         HijackButton(element);
     }
-
 
     const textArea = document.querySelector('form textarea') as HTMLTextAreaElement;
     if (!textArea.dataset.chatGptWizard) {
@@ -92,14 +93,64 @@ observer.observe(document, config);
 
 chrome.runtime.onMessage.addListener((request: any, sender: chrome.runtime.MessageSender, sendResponse: Function) => {
     console.log(request, sender);
-    // if (request.type === 'urlChange') {
-    //     // handleURLChange();
-    //     console.log("URL CHANGE");
-    //     setTimeout(()=>{
-    //
-    //     HijackButton();
-    //     }, 1000)
-    // }
 });
+
+// TODO update submit events based on the repo, for example enter + shift case which does not trigger submit event
+
+function getRootElement(): HTMLDivElement {
+    return document.querySelector('div[id="__next"]')!;
+}
+
+const rootEl = getRootElement()
+
+async function createShadowRoot(pathToCSS: string) {
+    const shadowRootDiv = document.createElement('div')
+    const shadowRoot = shadowRootDiv.attachShadow({ mode: 'open' })
+    const style = document.createElement('style')
+    // style.textContent = await fetch(Browser.runtime.getURL(pathToCSS)).then(response => response.text())
+    shadowRoot.append(style)
+    return { shadowRootDiv, shadowRoot }
+}
+
+async function updateUI() {
+    const ui = rootEl.querySelector('.chat-gpt-wizard');
+    const button = rootEl.querySelector('form textarea+button');
+    const textarea = rootEl.querySelector('form textarea');
+
+    console.log("RENER UI");
+    if(ui) return;
+
+    if (button && textarea) {
+
+        const textareaParentParent: any = textarea.parentElement!.parentElement;
+        textareaParentParent.style.flexDirection = 'column'
+        textareaParentParent.parentElement.style.flexDirection = 'column'
+        textareaParentParent.parentElement.style.gap = '0px'
+        textareaParentParent.parentElement.style.marginBottom = '0.5em'
+
+        const { shadowRootDiv, shadowRoot } = await createShadowRoot('content-scripts/mainUI.css')
+        shadowRootDiv.classList.add('chat-gpt-wizard')
+        textareaParentParent.appendChild(shadowRootDiv)
+        render(<div>TEST</div>, shadowRoot);
+        render(<div>TEST</div>, textareaParentParent);
+
+        textarea.parentElement!.style.flexDirection = 'row'
+        //
+        // renderSlashCommandsMenu()
+    }
+
+}
+
+// window.onload = function () {
+    updateUI()
+
+    try {
+        new MutationObserver(() => {
+            updateUI()
+        }).observe(rootEl, { childList: true })
+    } catch (e: any) {
+        console.info("WebChatGPT error --> Could not update UI:\n", e.stack)
+    }
+// }
 
 export {}

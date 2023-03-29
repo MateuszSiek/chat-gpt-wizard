@@ -16,14 +16,14 @@ export default defineManifest({
     default_icon: 'img/logo-48.png',
   },
   options_page: 'options.html',
-  // background: {
-  //   service_worker: 'src/background/index.ts',
-  //   type: 'module'
-  // },
+  background: {
+    service_worker: 'src/background/index.ts',
+    type: 'module'
+  },
   content_scripts: [
     {
       matches: ['http://*/*', 'https://*/*'],
-      js: ['src/content/index.ts'],
+      js: ['src/content/index.tsx'],
     },
   ],
   web_accessible_resources: [

@@ -14,10 +14,14 @@
     "default_icon": "img/logo-48.png"
   },
   "options_page": "options.html",
+  "background": {
+    "service_worker": "service-worker-loader.js",
+    "type": "module"
+  },
   "content_scripts": [
     {
       "js": [
-        "assets/content-script-loader.index.ts.js.js"
+        "assets/content-script-loader.chunk-90b6a218.7ba7035f.js"
       ],
       "matches": [
         "http://*/*",
@@ -38,11 +42,13 @@
     },
     {
       "matches": [
-        "<all_urls>"
+        "http://*/*",
+        "https://*/*"
       ],
       "resources": [
-        "**/*",
-        "*"
+        "assets/chunk-02bca0d5.js",
+        "assets/chunk-339ee2f8.js",
+        "assets/chunk-90b6a218.js"
       ],
       "use_dynamic_url": true
     }
@@ -53,9 +59,5 @@
   ],
   "host_permissions": [
     "<all_urls>"
-  ],
-  "background": {
-    "service_worker": "service-worker-loader.js",
-    "type": "module"
-  }
+  ]
 }
