@@ -60,6 +60,11 @@ export async function getPrompts(): Promise<Prompt[]> {
     return localStorage.get('prompts').then(({prompts}) => prompts)
 }
 
+export async function getActivePrompts(): Promise<Prompt[]> {
+    const prompts = await getPrompts();
+    return prompts.filter(prompt => prompt.active);
+}
+
 export async function addNewPrompt() {
     const prompts = await getPrompts();
     const newPrompt = {...EmptyPrompt, id: getRandomId()};

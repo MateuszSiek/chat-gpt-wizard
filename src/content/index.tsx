@@ -1,9 +1,11 @@
 import {HijackButton, HijackKeyboardEvents} from "./button-hijack";
-import {localStorage} from "../utils/local-storage";
-import {render} from "preact";
+import {getActivePrompts, localStorage, Prompt} from "../utils/local-storage";
 import Browser from "webextension-polyfill";
+import {render, html} from "htm/preact";
+import {useState, useEffect} from "preact/hooks";
+import css from "./index.css";
 
-console.info('chrome-ext template-react-ts content scrip')
+console.info('chrome-ext template-react-ts content scrip', css)
 
 localStorage.changeStream
     .subscribe((change) => {
@@ -71,7 +73,7 @@ const observer = new MutationObserver((mutationsList) => {
             const removedNodes = Array.from(mutation.removedNodes);
             const targetNodes = addedNodes.concat(removedNodes);
 
-            console.log("addedNodes", addedNodes);
+            // console.log("addedNodes", addedNodes);
             targetNodes.forEach((node: any) => {
                 if (node.matches) {
                     handleElementChange(node);
@@ -103,13 +105,35 @@ function getRootElement(): HTMLDivElement {
 
 const rootEl = getRootElement()
 
-async function createShadowRoot(pathToCSS: string) {
+function createShadowRoot() {
     const shadowRootDiv = document.createElement('div')
-    const shadowRoot = shadowRootDiv.attachShadow({ mode: 'open' })
+    const shadowRoot = shadowRootDiv.attachShadow({mode: 'open'})
     const style = document.createElement('style')
-    // style.textContent = await fetch(Browser.runtime.getURL(pathToCSS)).then(response => response.text())
+    style.textContent = css;
     shadowRoot.append(style)
-    return { shadowRootDiv, shadowRoot }
+    return shadowRootDiv
+}
+
+const PromptsDropdown = () => {
+    const [prompts, setPrompts] = useState<Prompt[]>([])
+    useEffect(() => {
+        getActivePrompts().then((prompts) => {
+            setPrompts(prompts);
+        });
+    }, []);
+
+    return html`
+		<div class="chat-gpt-wizard--select-wrapper">
+			<select class="chat-gpt-wizard--select" name="cars" id="cars">
+				${prompts.map(({name, id}: Prompt) => html`
+					<option value="${id}">${name}</option>`)}
+			</select>
+		</div>`;
+}
+
+function renderCommands(container: any) {
+    render(html`
+		<${PromptsDropdown}/>`, container);
 }
 
 async function updateUI() {
@@ -118,7 +142,7 @@ async function updateUI() {
     const textarea = rootEl.querySelector('form textarea');
 
     console.log("RENER UI");
-    if(ui) return;
+    if (ui) return;
 
     if (button && textarea) {
 
@@ -128,29 +152,26 @@ async function updateUI() {
         textareaParentParent.parentElement.style.gap = '0px'
         textareaParentParent.parentElement.style.marginBottom = '0.5em'
 
-        const { shadowRootDiv, shadowRoot } = await createShadowRoot('content-scripts/mainUI.css')
+        const shadowRootDiv = createShadowRoot()
         shadowRootDiv.classList.add('chat-gpt-wizard')
         textareaParentParent.appendChild(shadowRootDiv)
-        render(<div>TEST</div>, shadowRoot);
-        render(<div>TEST</div>, textareaParentParent);
-
         textarea.parentElement!.style.flexDirection = 'row'
-        //
-        // renderSlashCommandsMenu()
+
+        renderCommands(textareaParentParent);
     }
 
 }
 
 // window.onload = function () {
-    updateUI()
+updateUI()
 
-    try {
-        new MutationObserver(() => {
-            updateUI()
-        }).observe(rootEl, { childList: true })
-    } catch (e: any) {
-        console.info("WebChatGPT error --> Could not update UI:\n", e.stack)
-    }
+try {
+    new MutationObserver(() => {
+        updateUI()
+    }).observe(rootEl, {childList: true})
+} catch (e: any) {
+    console.info("WebChatGPT error --> Could not update UI:\n", e.stack)
+}
 // }
 
 export {}

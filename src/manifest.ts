@@ -23,7 +23,7 @@ export default defineManifest({
   },
   content_scripts: [
     {
-      matches: ["http://*/*", "https://*/*"],
+      matches: ["https://chat.openai.com/chat*"],
       js: ["src/content/index.tsx"],
     },
   ],
@@ -35,7 +35,7 @@ export default defineManifest({
         "img/logo-48.png",
         "img/logo-128.png",
       ],
-      matches: [],
+      matches: ["https://chat.openai.com/*"],
     },
   ],
   permissions: ["storage", "tabs"],

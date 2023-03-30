@@ -1,0 +1,19 @@
+.chat-gpt-wizard--select-wrapper {
+    position: absolute;
+    top: 0;
+    transform: translateY(calc(-4px - 100%));
+}
+
+.chat-gpt-wizard--select-wrapper select {
+    border-radius: 0.375rem;
+    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+}
+
+.dark .chat-gpt-wizard--select-wrapper select {
+    background-color: rgba(64,65,79, 1);
+    border-color: rgba(32,33,35,.5);
+}
+
+.light .chat-gpt-wizard--select-wrapper select {
+    border-color: rgba(0,0,0,.1);
+}

@@ -1,1 +1,3 @@
-import './assets/chunk-8ac946bb.js';
+import 'http:/localhost:3000/@vite/env';
+import 'http://localhost:3000/crx-client-worker';
+import 'http://localhost:3000/src/background/index.ts';
