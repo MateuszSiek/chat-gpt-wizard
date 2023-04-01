@@ -21,10 +21,13 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content-script-loader.index.tsx.js.js"
+        "assets/content-script-loader.chunk-c137d668.45e9bd08.js"
       ],
       "matches": [
         "https://chat.openai.com/chat*"
+      ],
+      "css": [
+        "assets/index.tsx.d8beb59d.css"
       ]
     }
   ],
@@ -43,11 +46,11 @@
     },
     {
       "matches": [
-        "<all_urls>"
+        "https://chat.openai.com/*"
       ],
       "resources": [
-        "**/*",
-        "*"
+        "assets/chunk-cafb85b3.js",
+        "assets/chunk-c137d668.js"
       ],
       "use_dynamic_url": true
     }

@@ -1,40 +1,42 @@
-function updateTextArea() {
+import {getTextarea} from "./selectors";
+import {PROMPT_WRAPPER_TEXT} from "./util";
 
-    const textArea: HTMLTextAreaElement = document.querySelector('form textarea') as HTMLTextAreaElement;
+function updateTextArea(prompt: () => string | undefined) {
+    const textArea: HTMLTextAreaElement | null = getTextarea();
+    if (!textArea) {
+        return;
+    }
     const currentText = textArea.value;
-    const updatedText = "‏‏‎ ‎" + "Udawaj że jesteś janem Pawłem drugim odpowiadając na moje pytania. Bądź też tajemniczy i żartobliwy.!" + "‏‏‎ ‎" + currentText;
-    textArea.value = updatedText;
+    const promptText = prompt();
+    console.log("PROMPT!!!!", promptText);
+    textArea.value = promptText ? PROMPT_WRAPPER_TEXT + promptText + PROMPT_WRAPPER_TEXT + currentText : currentText;
 }
 
-function HijackKeyboardEvents(input: HTMLTextAreaElement) {
-
-// Store the original keydown event handler
+function HijackKeyboardEvents(input: HTMLTextAreaElement, prompt: () => string | undefined) {
     const originalKeydown = input.onkeydown;
 
-// Create a new function to wrap the original keydown event
     function wrappedKeydown(event: KeyboardEvent) {
         if (event.key === "Enter") {
             console.log('Code to execute before the original keydown event');
-            updateTextArea();
+            updateTextArea(prompt);
         }
-        // Call the original keydown event handler
         if (originalKeydown) {
             originalKeydown.call(input, event);
         }
     }
 
-// Replace the input's keydown event handler with the new wrapped function
     input.onkeydown = wrappedKeydown;
     input.dataset.chatGptWizard = "true";
+
+    console.log("Textarea hijacked", input);
 }
 
-function HijackButton(button: HTMLButtonElement) {
+function HijackButton(button: HTMLButtonElement, prompt: () => string | undefined) {
     const originalOnClick = button.onclick;
 
     function wrappedOnClick(event: MouseEvent) {
         console.log('Code to execute before the original onclick event');
-
-        updateTextArea();
+        updateTextArea(prompt);
         if (originalOnClick) {
             originalOnClick.call(button, event);
         }

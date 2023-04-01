@@ -1,54 +1,49 @@
 import {HijackButton, HijackKeyboardEvents} from "./button-hijack";
-import {getActivePrompts, localStorage, Prompt} from "../utils/local-storage";
+import {getActivePrompts, getSelectedPrompt, localStorage, Prompt, setSelectedPrompt} from "../utils/local-storage";
 import Browser from "webextension-polyfill";
 import {render, html} from "htm/preact";
 import {useState, useEffect} from "preact/hooks";
-import css from "./index.css";
+import {BUTTON_SELECTOR, getButton, getRootElement, getTextarea, getUi, MESSAGE_SELECTOR} from "./selectors";
+import {createShadowRoot, PROMPT_WRAPPER_TEXT, replaceTextBetweenWords} from "./util";
 
-console.info('chrome-ext template-react-ts content scrip', css)
+console.info('chrome-ext template-react-ts content scrip')
 
-localStorage.changeStream
-    .subscribe((change) => {
-        console.log('localStorage.changeStream', change)
-    })
+let selectedPrompt: Prompt | undefined = undefined;
+
+getSelectedPrompt().then((prompt) => {
+    selectedPrompt = prompt;
+    // console.log("selectedPrompt", selectedPrompt);
+});
 
 localStorage.valueStream.subscribe((values) => {
-    console.log('Everything in this bucket', values)
+    // console.log('Everything in this bucket', values)
 })
 
 const handleButtonChange = (element: HTMLButtonElement) => {
     if (!element.dataset.chatGptWizard) {
-        console.log('Element changed:', element);
-        HijackButton(element);
+        HijackButton(element, () => selectedPrompt && selectedPrompt.prompt);
     }
 
     const textArea = document.querySelector('form textarea') as HTMLTextAreaElement;
     if (!textArea.dataset.chatGptWizard) {
-        console.log('textArea Element changed:', textArea);
-        HijackKeyboardEvents(textArea);
+        HijackKeyboardEvents(textArea, () => selectedPrompt && selectedPrompt.prompt);
     }
 }
 
-function replaceTextBetweenWords(inputString: string, firstWord: string, secondWord: string, replacement: string) {
-    const regex = new RegExp(firstWord + '.*?' + secondWord, 'g');
-    return inputString.replace(regex, replacement);
-}
-
 const selectorsAndHandlers: any = {
-    'form textarea+button': handleButtonChange,
+    [BUTTON_SELECTOR]: handleButtonChange,
     ':not(button)': function handleElementChange2(element: HTMLElement) {
         const updateTextNode = (node: any) => {
-            const isInitPrompt = node?.innerHTML?.includes('‏‏‎ ‎');
+            const isInitPrompt = node?.innerHTML?.includes(PROMPT_WRAPPER_TEXT);
             if (!node.dataset.chatGptWizard && isInitPrompt) {
-                console.log('Element changed (Selector 2):', node);
                 node.dataset.chatGptWizard = "true";
-                node.innerHTML = replaceTextBetweenWords(node.innerHTML, "‏‏‎ ‎", "‏‏‎ ‎", "");//node.innerHTML.replace('** Please call me sir **', '');
+                node.innerHTML = replaceTextBetweenWords(node.innerHTML, PROMPT_WRAPPER_TEXT, PROMPT_WRAPPER_TEXT, "");
             }
         }
-        if (element.matches('.items-start')) {
+        if (element.matches(MESSAGE_SELECTOR)) {
             updateTextNode(element);
         } else {
-            element.querySelectorAll('.items-start').forEach((node: any) => {
+            element.querySelectorAll(MESSAGE_SELECTOR).forEach((node: any) => {
                 updateTextNode(node);
             });
         }
@@ -73,7 +68,6 @@ const observer = new MutationObserver((mutationsList) => {
             const removedNodes = Array.from(mutation.removedNodes);
             const targetNodes = addedNodes.concat(removedNodes);
 
-            // console.log("addedNodes", addedNodes);
             targetNodes.forEach((node: any) => {
                 if (node.matches) {
                     handleElementChange(node);
@@ -89,44 +83,32 @@ const observer = new MutationObserver((mutationsList) => {
 });
 
 // Observe the whole document for changes
-const config = {childList: true, subtree: true, attributes: true};
-observer.observe(document, config);
-
-
-chrome.runtime.onMessage.addListener((request: any, sender: chrome.runtime.MessageSender, sendResponse: Function) => {
-    console.log(request, sender);
-});
+observer.observe(document, {childList: true, subtree: true, attributes: true});
 
 // TODO update submit events based on the repo, for example enter + shift case which does not trigger submit event
 
-function getRootElement(): HTMLDivElement {
-    return document.querySelector('div[id="__next"]')!;
-}
-
-const rootEl = getRootElement()
-
-function createShadowRoot() {
-    const shadowRootDiv = document.createElement('div')
-    const shadowRoot = shadowRootDiv.attachShadow({mode: 'open'})
-    const style = document.createElement('style')
-    style.textContent = css;
-    shadowRoot.append(style)
-    return shadowRootDiv
-}
-
 const PromptsDropdown = () => {
     const [prompts, setPrompts] = useState<Prompt[]>([])
+    const [selectedId, setSelectedId] = useState<string | undefined>(selectedPrompt && selectedPrompt.id);
     useEffect(() => {
         getActivePrompts().then((prompts) => {
             setPrompts(prompts);
         });
     }, []);
 
+    const handleChange = (event: any) => {
+        selectedPrompt = prompts.find(({id}) => id === event.target.value);
+        const selectedPromptId = selectedPrompt && selectedPrompt.id;
+        selectedPromptId && setSelectedPrompt(selectedPromptId);
+        setSelectedId(selectedPromptId);
+    }
+
     return html`
 		<div class="chat-gpt-wizard--select-wrapper">
-			<select class="chat-gpt-wizard--select" name="cars" id="cars">
+			<select onChange=${handleChange} class="chat-gpt-wizard--select" name="cars" id="cars">
+				<option value="" selected=${!selectedId && "selected"}></option>
 				${prompts.map(({name, id}: Prompt) => html`
-					<option value="${id}">${name}</option>`)}
+					<option value="${id}" selected=${selectedId === id && "selected"}>${name}</option>`)}
 			</select>
 		</div>`;
 }
@@ -137,11 +119,10 @@ function renderCommands(container: any) {
 }
 
 async function updateUI() {
-    const ui = rootEl.querySelector('.chat-gpt-wizard');
-    const button = rootEl.querySelector('form textarea+button');
-    const textarea = rootEl.querySelector('form textarea');
+    const ui = getUi();
+    const button = getButton();
+    const textarea = getTextarea();
 
-    console.log("RENER UI");
     if (ui) return;
 
     if (button && textarea) {
@@ -162,16 +143,16 @@ async function updateUI() {
 
 }
 
-// window.onload = function () {
 updateUI()
+
+const rootEl = getRootElement()
 
 try {
     new MutationObserver(() => {
         updateUI()
     }).observe(rootEl, {childList: true})
 } catch (e: any) {
-    console.info("WebChatGPT error --> Could not update UI:\n", e.stack)
+    console.info("ChatGptWizard error --> Could not update UI:\n", e.stack)
 }
-// }
 
 export {}

@@ -46,7 +46,8 @@ const EmptyPrompt = {
 const getRandomId = () => Math.floor(Math.random() * 1000000000).toString();
 
 export interface Store {
-    prompts: Prompt[]
+    prompts: Prompt[];
+    selectedPromptId: string;
 }
 
 export const localStorage = getBucket<Store>('store')
@@ -78,6 +79,7 @@ export async function removePrompt(id: string) {
 
     return localStorage.set({prompts: newPrompts}).then(({prompts}) => prompts);
 }
+
 export async function updatePrompt(data: Partial<Prompt>): Promise<Prompt[]> {
     const prompts = await getPrompts();
     const newPrompts = prompts.map(prompt => {
@@ -88,4 +90,15 @@ export async function updatePrompt(data: Partial<Prompt>): Promise<Prompt[]> {
     });
 
     return localStorage.set({prompts: newPrompts}).then(({prompts}) => prompts);
+}
+
+export async function setSelectedPrompt(id: string) {
+    return localStorage.set({selectedPromptId: id});
+}
+
+export async function getSelectedPrompt(): Promise<Prompt | undefined> {
+    const {selectedPromptId} = await localStorage.get('selectedPromptId');
+    const prompts = await getPrompts();
+
+    return prompts.find(prompt => prompt.id === selectedPromptId) || EmptyPrompt;
 }
