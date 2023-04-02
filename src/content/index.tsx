@@ -1,4 +1,4 @@
-import {HijackButton, HijackKeyboardEvents} from "./button-hijack";
+import {HijackButtonEvents, HijackKeyboardEvents} from "./button-hijack";
 import {
     getActivePrompts, getPromptFromHistory,
     getSelectedPrompt,
@@ -37,7 +37,6 @@ Browser.runtime.onMessage.addListener(({type, payload}) => {
         awaitingHistoryUpdate = false;
         currentChatId = payload;
         updateHistory(payload, selectedPrompt?.id);
-        removeSelectUI();
         updateInfoUI({chatId: payload, prompt: selectedPrompt});
     }
 });
@@ -48,8 +47,10 @@ localStorage.valueStream.subscribe((values) => {
 
 function onSubmit() {
     const textArea: HTMLTextAreaElement | null = getTextarea();
-    console.log("onSubmit", selectedPrompt);
-    if (!textArea || !selectedPrompt) {
+    const chatMessages = getChatMessages();
+    console.log("onSubmit", selectedPrompt, textArea, chatMessages);
+    removeSelectUI();
+    if (!textArea || !selectedPrompt || chatMessages.length > 0) {
         return;
     }
     const currentText = textArea.value;
@@ -63,13 +64,8 @@ const hijackEvents = () => {
     const textarea = getTextarea();
     if (!button || !textarea) return;
 
-    if (!button.dataset.chatGptWizard) {
-        HijackButton(button, onSubmit);
-    }
-
-    if (!textarea.dataset.chatGptWizard) {
-        HijackKeyboardEvents(textarea, onSubmit);
-    }
+    HijackButtonEvents(button, onSubmit);
+    HijackKeyboardEvents(textarea, onSubmit);
 }
 
 const hideNodePrompt = (node: any) => {
@@ -105,16 +101,15 @@ const observer = new MutationObserver((mutationsList) => {
 
 observer.observe(document, {childList: true, subtree: true});
 
-// TODO update submit events based on the repo, for example enter + shift case which does not trigger submit event
-
 const PromptsDropdown = () => {
     const [prompts, setPrompts] = useState<Prompt[]>([])
     const [selectedId, setSelectedId] = useState<string | undefined>(selectedPrompt && selectedPrompt.id);
     useEffect(() => {
-        getActivePrompts().then((prompts) => {
+        Promise.all([
+            getActivePrompts(),
+            getSelectedPrompt(),
+        ]).then(([prompts, prompt]) => {
             setPrompts(prompts);
-        });
-        getSelectedPrompt().then((prompt) => {
             setSelectedId(prompt && prompt.id);
         });
     }, []);
@@ -126,9 +121,11 @@ const PromptsDropdown = () => {
         setSelectedId(selectedPromptId);
     }
 
+    const SELECT_CLASS = "chat-gpt-wizard--select cursor-default rounded-md border border-black/10 bg-white text-left focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600 dark:border-white/20 dark:bg-gray-800 sm:text-sm";
     return html`
 		<div class="chat-gpt-wizard--select-wrapper">
-			<select onChange=${handleChange} class="chat-gpt-wizard--select" name="cars" id="cars">
+			<div class="chat-gpt-wizard--select-label text-xs text-gray-700 dark:text-gray-500">Select prompt</div>
+			<select onChange=${handleChange} class=${SELECT_CLASS} name="cars" id="cars">
 				<option value="" selected=${!selectedId && "selected"}></option>
 				${prompts.map(({name, id}: Prompt) => html`
 					<option value="${id}" selected=${selectedId === id && "selected"}>${name}</option>`)}
@@ -162,7 +159,7 @@ async function updateSelectUI() {
 
 // UI for displaying info about used prompt
 // Rendered when there is already chat history
-async function updateInfoUI({chatId, prompt}: { chatId?: string, prompt?: Prompt} = {}) {
+async function updateInfoUI({chatId, prompt}: { chatId?: string, prompt?: Prompt } = {}) {
     const modelTitle = getModelTitle();
     const currentId = chatId || getCurrentChatId();
     const historyPrompt = prompt || currentId && await getPromptFromHistory(currentId);
@@ -183,7 +180,7 @@ async function updateUI() {
     const button = getButton();
     const textarea = getTextarea();
     const chatMessages = getChatMessages();
-    console.log("updateUI",ui,  chatMessages, textarea);
+    console.log("updateUI", ui, chatMessages, textarea);
 
     hideUiPrompts(getRootElement());
 
