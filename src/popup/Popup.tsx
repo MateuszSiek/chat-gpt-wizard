@@ -2,6 +2,7 @@ import './Popup.css'
 import {useEffect, useState} from 'react'
 import {addNewPrompt, getPrompts, removePrompt, Prompt, updatePrompt} from "../utils/local-storage";
 import {PromptsAccordion} from "./Accordion";
+import {Button} from "@mantine/core";
 
 function App() {
     const [prompts, setPrompts] = useState<Prompt[]>([])
@@ -43,7 +44,7 @@ function App() {
             <h6>v 0.0.0</h6>
             <h2>Edit your prompts</h2>
             {prompts && <PromptsAccordion data={prompts} updatePrompt={update} removePrompt={remove}/>}
-            <button onClick={addPrompt}>Test</button>
+            <Button variant="outline" onClick={addPrompt} color="blue" compact>Add</Button>
         </main>
     )
 }

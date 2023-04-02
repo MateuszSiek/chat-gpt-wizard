@@ -1,7 +1,8 @@
 export const BUTTON_SELECTOR = 'form textarea+button';
 export const TEXTAREA_SELECTOR = 'form textarea';
 export const UI_SELECTOR = '.chat-gpt-wizard';
-export const MESSAGE_SELECTOR = `.items-start:not(.scrollbar-trigger)`
+export const MESSAGE_SELECTOR = `.items-start:not(.scrollbar-trigger)`;
+export const MESSAGE_GROUP_SELECTOR = `main div.group`;
 
 export function getRootElement(): HTMLDivElement {
     return document.querySelector('div[id="__next"]')!;
@@ -20,4 +21,9 @@ export function getButton(): HTMLButtonElement | null {
 export function getTextarea(): HTMLTextAreaElement | null {
     const rootEl = getRootElement();
     return rootEl.querySelector(TEXTAREA_SELECTOR);
+}
+
+export function getChatMessages(): HTMLDivElement[] {
+    const rootEl = getRootElement();
+    return [...rootEl.querySelectorAll<HTMLDivElement>(MESSAGE_GROUP_SELECTOR)];
 }

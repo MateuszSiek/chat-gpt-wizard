@@ -3,7 +3,14 @@ import {getActivePrompts, getSelectedPrompt, localStorage, Prompt, setSelectedPr
 import Browser from "webextension-polyfill";
 import {render, html} from "htm/preact";
 import {useState, useEffect} from "preact/hooks";
-import {BUTTON_SELECTOR, getButton, getRootElement, getTextarea, getUi, MESSAGE_SELECTOR} from "./selectors";
+import {
+    getButton, getChatMessages,
+    getRootElement,
+    getTextarea,
+    getUi,
+    MESSAGE_GROUP_SELECTOR,
+    MESSAGE_SELECTOR
+} from "./selectors";
 import {createShadowRoot, PROMPT_WRAPPER_TEXT, replaceTextBetweenWords} from "./util";
 
 console.info('chrome-ext template-react-ts content scrip')
@@ -19,71 +26,52 @@ localStorage.valueStream.subscribe((values) => {
     // console.log('Everything in this bucket', values)
 })
 
-const handleButtonChange = (element: HTMLButtonElement) => {
-    if (!element.dataset.chatGptWizard) {
-        HijackButton(element, () => selectedPrompt && selectedPrompt.prompt);
+const hijackEvents = () => {
+    const button = getButton();
+    const textarea = getTextarea();
+    if (!button || !textarea) return;
+
+    if (!button.dataset.chatGptWizard) {
+        HijackButton(button, () => selectedPrompt && selectedPrompt.prompt);
     }
 
-    const textArea = document.querySelector('form textarea') as HTMLTextAreaElement;
-    if (!textArea.dataset.chatGptWizard) {
-        HijackKeyboardEvents(textArea, () => selectedPrompt && selectedPrompt.prompt);
-    }
-}
-
-const selectorsAndHandlers: any = {
-    [BUTTON_SELECTOR]: handleButtonChange,
-    ':not(button)': function handleElementChange2(element: HTMLElement) {
-        const updateTextNode = (node: any) => {
-            const isInitPrompt = node?.innerHTML?.includes(PROMPT_WRAPPER_TEXT);
-            if (!node.dataset.chatGptWizard && isInitPrompt) {
-                node.dataset.chatGptWizard = "true";
-                node.innerHTML = replaceTextBetweenWords(node.innerHTML, PROMPT_WRAPPER_TEXT, PROMPT_WRAPPER_TEXT, "");
-            }
-        }
-        if (element.matches(MESSAGE_SELECTOR)) {
-            updateTextNode(element);
-        } else {
-            element.querySelectorAll(MESSAGE_SELECTOR).forEach((node: any) => {
-                updateTextNode(node);
-            });
-        }
-    },
-    // Add more selectors and functions as needed
-};
-
-function handleElementChange(element: HTMLElement) {
-    for (const selector in selectorsAndHandlers) {
-        if (element.matches(selector)) {
-            selectorsAndHandlers[selector](element);
-        }
+    if (!textarea.dataset.chatGptWizard) {
+        HijackKeyboardEvents(textarea, () => selectedPrompt && selectedPrompt.prompt);
     }
 }
 
-// Create a MutationObserver to watch for changes in the DOM
+const hideNodePrompt = (node: any) => {
+    const isInitPrompt = node?.innerHTML?.includes(PROMPT_WRAPPER_TEXT);
+    if (!node.dataset.chatGptWizard && isInitPrompt) {
+        node.dataset.chatGptWizard = "true";
+        node.innerHTML = replaceTextBetweenWords(node.innerHTML, PROMPT_WRAPPER_TEXT, PROMPT_WRAPPER_TEXT, "");
+    }
+}
+
+const hideUiPrompts = (parent: HTMLElement) => {
+    parent.querySelectorAll(MESSAGE_SELECTOR).forEach((node: any) => {
+        hideNodePrompt(node);
+    });
+}
+
 const observer = new MutationObserver((mutationsList) => {
     for (const mutation of mutationsList) {
         if (mutation.type === 'childList') {
-            // Check if the element is added or removed
             const addedNodes = Array.from(mutation.addedNodes);
-            const removedNodes = Array.from(mutation.removedNodes);
-            const targetNodes = addedNodes.concat(removedNodes);
 
-            targetNodes.forEach((node: any) => {
-                if (node.matches) {
-                    handleElementChange(node);
+            addedNodes.forEach((node: any) => {
+                if (node.matches && node.matches(MESSAGE_GROUP_SELECTOR)) {
+                    hideUiPrompts(node);
+                }
+                if (node.matches && node.matches(MESSAGE_SELECTOR)) {
+                    hideNodePrompt(node);
                 }
             });
-        }
-
-        if (mutation.type === 'attributes') {
-            // Handle attribute changes for the element
-            handleElementChange(mutation.target as HTMLButtonElement);
         }
     }
 });
 
-// Observe the whole document for changes
-observer.observe(document, {childList: true, subtree: true, attributes: true});
+observer.observe(document, {childList: true, subtree: true});
 
 // TODO update submit events based on the repo, for example enter + shift case which does not trigger submit event
 
@@ -122,34 +110,45 @@ async function updateUI() {
     const ui = getUi();
     const button = getButton();
     const textarea = getTextarea();
+    const chatMessages = getChatMessages();
+
+    if (chatMessages.length > 0) {
+        ui && ui.remove();
+        return
+    }
+
+    hideUiPrompts(getRootElement());
+    hijackEvents();
 
     if (ui) return;
 
     if (button && textarea) {
 
         const textareaParentParent: any = textarea.parentElement!.parentElement;
-        textareaParentParent.style.flexDirection = 'column'
-        textareaParentParent.parentElement.style.flexDirection = 'column'
-        textareaParentParent.parentElement.style.gap = '0px'
-        textareaParentParent.parentElement.style.marginBottom = '0.5em'
 
         const shadowRootDiv = createShadowRoot()
-        shadowRootDiv.classList.add('chat-gpt-wizard')
+        shadowRootDiv.classList.add('chat-gpt-wizard--shadow-root')
         textareaParentParent.appendChild(shadowRootDiv)
-        textarea.parentElement!.style.flexDirection = 'row'
 
-        renderCommands(textareaParentParent);
+        let div = document.querySelector('.chat-gpt-wizard')
+        if (div) div.remove()
+
+        div = document.createElement('div')
+        div.classList.add('chat-gpt-wizard--shadow-root')
+        textarea.parentElement!.insertBefore(div, textarea.parentElement!.firstChild)
+        renderCommands(div);
     }
+
 
 }
 
-updateUI()
+updateUI();
 
 const rootEl = getRootElement()
 
 try {
     new MutationObserver(() => {
-        updateUI()
+        updateUI();
     }).observe(rootEl, {childList: true})
 } catch (e: any) {
     console.info("ChatGptWizard error --> Could not update UI:\n", e.stack)

@@ -8,7 +8,6 @@ function updateTextArea(prompt: () => string | undefined) {
     }
     const currentText = textArea.value;
     const promptText = prompt();
-    console.log("PROMPT!!!!", promptText);
     textArea.value = promptText ? PROMPT_WRAPPER_TEXT + promptText + PROMPT_WRAPPER_TEXT + currentText : currentText;
 }
 

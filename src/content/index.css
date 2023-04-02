@@ -1,10 +1,10 @@
 .chat-gpt-wizard--select-wrapper {
     position: absolute;
     top: 0;
+    left: 0;
     width: 100%;
-    display: flex;
     transform: translateY(calc(-4px - 100%));
-    justify-content: space-between;
+    text-align: center;
 }
 
 .chat-gpt-wizard--select-wrapper select {
