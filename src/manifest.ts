@@ -38,6 +38,6 @@ export default defineManifest({
       matches: ["https://chat.openai.com/*"],
     },
   ],
-  permissions: ["storage", "tabs"],
+  permissions: ["storage", "webRequest", "tabs"],
   host_permissions: ["<all_urls>"],
 });

@@ -7,4 +7,15 @@ Browser.runtime.onInstalled.addListener(async () => initialiseLocalStorage())
 
 Browser.runtime.onStartup.addListener(async () => initialiseLocalStorage()) // TEMP
 
+Browser.webRequest.onBeforeRequest.addListener(
+    function ({url, tabId}) {
+        const urlParts = url.split('/');
+        const id = urlParts[urlParts.length - 1];
+        Browser.tabs.sendMessage(tabId, {type: "chat-id",payload: id});
+        console.log('onBeforeRequest!!!', id);
+    },
+    {urls: ['https://chat.openai.com/backend-api/conversation/gen_title/*']},
+    ["requestBody"]
+);
+
 export {}

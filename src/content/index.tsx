@@ -1,30 +1,62 @@
 import {HijackButton, HijackKeyboardEvents} from "./button-hijack";
-import {getActivePrompts, getSelectedPrompt, localStorage, Prompt, setSelectedPrompt} from "../utils/local-storage";
+import {
+    getActivePrompts, getPromptFromHistory,
+    getSelectedPrompt,
+    localStorage,
+    setSelectedPrompt,
+    updateHistory
+} from "../utils/local-storage";
 import Browser from "webextension-polyfill";
 import {render, html} from "htm/preact";
 import {useState, useEffect} from "preact/hooks";
 import {
-    getButton, getChatMessages,
+    getButton, getChatMessages, getModelTitle,
     getRootElement,
     getTextarea,
     getUi,
     MESSAGE_GROUP_SELECTOR,
     MESSAGE_SELECTOR
 } from "./selectors";
-import {createShadowRoot, PROMPT_WRAPPER_TEXT, replaceTextBetweenWords} from "./util";
+import {createShadowRoot, getCurrentChatId, PROMPT_WRAPPER_TEXT, replaceTextBetweenWords} from "./util";
+import {Prompt} from "../utils/prompts";
 
 console.info('chrome-ext template-react-ts content scrip')
 
 let selectedPrompt: Prompt | undefined = undefined;
+let awaitingHistoryUpdate = false;
+let currentChatId: string | undefined = undefined;
 
 getSelectedPrompt().then((prompt) => {
     selectedPrompt = prompt;
     // console.log("selectedPrompt", selectedPrompt);
 });
 
+Browser.runtime.onMessage.addListener(({type, payload}) => {
+    if (type === 'chat-id' && awaitingHistoryUpdate && selectedPrompt) {
+        console.log('Browser message', payload,);
+        awaitingHistoryUpdate = false;
+        currentChatId = payload;
+        updateHistory(payload, selectedPrompt?.id);
+        removeSelectUI();
+        updateInfoUI({chatId: payload, prompt: selectedPrompt});
+    }
+});
+
 localStorage.valueStream.subscribe((values) => {
     // console.log('Everything in this bucket', values)
 })
+
+function onSubmit() {
+    const textArea: HTMLTextAreaElement | null = getTextarea();
+    console.log("onSubmit", selectedPrompt);
+    if (!textArea || !selectedPrompt) {
+        return;
+    }
+    const currentText = textArea.value;
+    const promptText = selectedPrompt.prompt;
+    textArea.value = promptText ? PROMPT_WRAPPER_TEXT + promptText + PROMPT_WRAPPER_TEXT + currentText : currentText;
+    awaitingHistoryUpdate = true;
+}
 
 const hijackEvents = () => {
     const button = getButton();
@@ -32,11 +64,11 @@ const hijackEvents = () => {
     if (!button || !textarea) return;
 
     if (!button.dataset.chatGptWizard) {
-        HijackButton(button, () => selectedPrompt && selectedPrompt.prompt);
+        HijackButton(button, onSubmit);
     }
 
     if (!textarea.dataset.chatGptWizard) {
-        HijackKeyboardEvents(textarea, () => selectedPrompt && selectedPrompt.prompt);
+        HijackKeyboardEvents(textarea, onSubmit);
     }
 }
 
@@ -82,6 +114,9 @@ const PromptsDropdown = () => {
         getActivePrompts().then((prompts) => {
             setPrompts(prompts);
         });
+        getSelectedPrompt().then((prompt) => {
+            setSelectedId(prompt && prompt.id);
+        });
     }, []);
 
     const handleChange = (event: any) => {
@@ -106,37 +141,62 @@ function renderCommands(container: any) {
 		<${PromptsDropdown}/>`, container);
 }
 
+// UI for selecting prompt
+// Rendered only when user types first message
+async function updateSelectUI() {
+    if (getUi()) return;
+
+    const textarea = getTextarea()!;
+    const textareaParentParent: any = textarea.parentElement!.parentElement;
+
+    const shadowRootDiv = createShadowRoot()
+    shadowRootDiv.classList.add('chat-gpt-wizard--shadow-root')
+    textareaParentParent.appendChild(shadowRootDiv)
+
+    let ui = document.createElement('div');
+    ui.classList.add('chat-gpt-wizard');
+    textarea.parentElement!.insertBefore(ui, textarea.parentElement!.firstChild);
+
+    renderCommands(ui);
+}
+
+// UI for displaying info about used prompt
+// Rendered when there is already chat history
+async function updateInfoUI({chatId, prompt}: { chatId?: string, prompt?: Prompt} = {}) {
+    const modelTitle = getModelTitle();
+    const currentId = chatId || getCurrentChatId();
+    const historyPrompt = prompt || currentId && await getPromptFromHistory(currentId);
+
+    if (modelTitle && historyPrompt) {
+        const title = modelTitle.innerText;
+        modelTitle.innerText = title + " --- ChatGptWizard prompt: " + historyPrompt.name;
+    }
+}
+
+function removeSelectUI() {
+    const ui = getUi();
+    ui && ui.remove();
+}
+
 async function updateUI() {
     const ui = getUi();
     const button = getButton();
     const textarea = getTextarea();
     const chatMessages = getChatMessages();
+    console.log("updateUI",ui,  chatMessages, textarea);
+
+    hideUiPrompts(getRootElement());
 
     if (chatMessages.length > 0) {
-        ui && ui.remove();
+        removeSelectUI();
+        await updateInfoUI();
         return
     }
 
-    hideUiPrompts(getRootElement());
     hijackEvents();
 
-    if (ui) return;
-
     if (button && textarea) {
-
-        const textareaParentParent: any = textarea.parentElement!.parentElement;
-
-        const shadowRootDiv = createShadowRoot()
-        shadowRootDiv.classList.add('chat-gpt-wizard--shadow-root')
-        textareaParentParent.appendChild(shadowRootDiv)
-
-        let div = document.querySelector('.chat-gpt-wizard')
-        if (div) div.remove()
-
-        div = document.createElement('div')
-        div.classList.add('chat-gpt-wizard--shadow-root')
-        textarea.parentElement!.insertBefore(div, textarea.parentElement!.firstChild)
-        renderCommands(div);
+        await updateSelectUI();
     }
 
 

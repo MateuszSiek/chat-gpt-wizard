@@ -1,8 +1,9 @@
 import './Popup.css'
 import {useEffect, useState} from 'react'
-import {addNewPrompt, getPrompts, removePrompt, Prompt, updatePrompt} from "../utils/local-storage";
+import {addNewPrompt, getPrompts, removePrompt, updatePrompt} from "../utils/local-storage";
 import {PromptsAccordion} from "./Accordion";
 import {Button} from "@mantine/core";
+import {Prompt} from "../utils/prompts";
 
 function App() {
     const [prompts, setPrompts] = useState<Prompt[]>([])
@@ -13,14 +14,14 @@ function App() {
         });
     }, [])
 
-    const sentMessage = async () => {
-        console.log('sentMessage sentMessagee');
-        let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
-
-        chrome.tabs.sendMessage(tab.id as number, {greeting: "hello"}, function (response) {
-            console.log(response?.farewell);
-        });
-    }
+    // const sentMessage = async () => {
+    //     console.log('sentMessage sentMessagee');
+    //     let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+    //
+    //     chrome.tabs.sendMessage(tab.id as number, {greeting: "hello"}, function (response) {
+    //         console.log(response?.farewell);
+    //     });
+    // }
     const addPrompt = () => {
         addNewPrompt().then((prompts) => {
             setPrompts(prompts);

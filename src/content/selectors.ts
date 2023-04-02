@@ -3,6 +3,7 @@ export const TEXTAREA_SELECTOR = 'form textarea';
 export const UI_SELECTOR = '.chat-gpt-wizard';
 export const MESSAGE_SELECTOR = `.items-start:not(.scrollbar-trigger)`;
 export const MESSAGE_GROUP_SELECTOR = `main div.group`;
+export const MODEL_TITLE_SELECTOR = 'main .items-center>.items-center';
 
 export function getRootElement(): HTMLDivElement {
     return document.querySelector('div[id="__next"]')!;
@@ -26,4 +27,9 @@ export function getTextarea(): HTMLTextAreaElement | null {
 export function getChatMessages(): HTMLDivElement[] {
     const rootEl = getRootElement();
     return [...rootEl.querySelectorAll<HTMLDivElement>(MESSAGE_GROUP_SELECTOR)];
+}
+
+export function getModelTitle(): HTMLDivElement | null {
+    const rootEl = getRootElement();
+    return rootEl.querySelector(MODEL_TITLE_SELECTOR);
 }

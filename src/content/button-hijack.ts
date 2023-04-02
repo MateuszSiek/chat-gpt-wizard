@@ -1,23 +1,12 @@
 import {getTextarea} from "./selectors";
 import {PROMPT_WRAPPER_TEXT} from "./util";
 
-function updateTextArea(prompt: () => string | undefined) {
-    const textArea: HTMLTextAreaElement | null = getTextarea();
-    if (!textArea) {
-        return;
-    }
-    const currentText = textArea.value;
-    const promptText = prompt();
-    textArea.value = promptText ? PROMPT_WRAPPER_TEXT + promptText + PROMPT_WRAPPER_TEXT + currentText : currentText;
-}
-
-function HijackKeyboardEvents(input: HTMLTextAreaElement, prompt: () => string | undefined) {
+function HijackKeyboardEvents(input: HTMLTextAreaElement, onSubmit: () => void) {
     const originalKeydown = input.onkeydown;
 
     function wrappedKeydown(event: KeyboardEvent) {
-        if (event.key === "Enter") {
-            console.log('Code to execute before the original keydown event');
-            updateTextArea(prompt);
+        if (event.key === "Enter" && !event.shiftKey) {
+            onSubmit();
         }
         if (originalKeydown) {
             originalKeydown.call(input, event);
@@ -30,12 +19,11 @@ function HijackKeyboardEvents(input: HTMLTextAreaElement, prompt: () => string |
     console.log("Textarea hijacked", input);
 }
 
-function HijackButton(button: HTMLButtonElement, prompt: () => string | undefined) {
+function HijackButton(button: HTMLButtonElement, onSubmit: () => void) {
     const originalOnClick = button.onclick;
 
     function wrappedOnClick(event: MouseEvent) {
-        console.log('Code to execute before the original onclick event');
-        updateTextArea(prompt);
+        onSubmit();
         if (originalOnClick) {
             originalOnClick.call(button, event);
         }

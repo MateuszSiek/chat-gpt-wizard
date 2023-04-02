@@ -9,7 +9,7 @@ import {
     TextInput
 } from '@mantine/core';
 import {ChangeEvent, useEffect, useState} from "react";
-import {Prompt} from "../utils/local-storage";
+import {Prompt} from "../utils/prompts";
 
 interface AccordionProps {
     data: Prompt[];
