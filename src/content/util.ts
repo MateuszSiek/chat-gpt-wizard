@@ -20,7 +20,7 @@ export function replaceTextBetweenWords(inputString: string, firstWord: string, 
 
 export function getCurrentChatId(): string |undefined {
     const url = window.location.pathname;
-    const regex = /chat\/(\w+)/;
+    const regex = /chat\/([a-zA-Z0-9-_]+)(\/|$)/;
     const match = url.match(regex);
 
     if (match && match[1]) {

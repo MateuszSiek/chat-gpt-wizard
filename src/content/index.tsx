@@ -119,6 +119,7 @@ const PromptsDropdown = () => {
         const selectedPromptId = selectedPrompt && selectedPrompt.id;
         selectedPromptId && setSelectedPrompt(selectedPromptId);
         setSelectedId(selectedPromptId);
+        setTextPlaceholder(selectedPrompt);
     }
 
     const SELECT_CLASS = "chat-gpt-wizard--select cursor-default rounded-md border border-black/10 bg-white text-left focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600 dark:border-white/20 dark:bg-gray-800 sm:text-sm";
@@ -152,9 +153,16 @@ async function updateSelectUI() {
 
     let ui = document.createElement('div');
     ui.classList.add('chat-gpt-wizard');
-    textarea.parentElement!.insertBefore(ui, textarea.parentElement!.firstChild);
+    const form = document.querySelector('form');
+    form!.parentElement!.insertBefore(ui, form!.parentElement!.firstChild);
 
     renderCommands(ui);
+}
+
+function setTextPlaceholder(prompt?: Prompt): void {
+    const textArea: HTMLTextAreaElement | null = getTextarea();
+    if(!textArea) return;
+    textArea!.placeholder = prompt?.placeholder || "Send a message...";
 }
 
 // UI for displaying info about used prompt
@@ -164,9 +172,11 @@ async function updateInfoUI({chatId, prompt}: { chatId?: string, prompt?: Prompt
     const currentId = chatId || getCurrentChatId();
     const historyPrompt = prompt || currentId && await getPromptFromHistory(currentId);
 
+    console.log("updateInfoUI", modelTitle, currentId, historyPrompt);
     if (modelTitle && historyPrompt) {
         const title = modelTitle.innerText;
         modelTitle.innerText = title + " --- ChatGptWizard prompt: " + historyPrompt.name;
+        setTextPlaceholder(historyPrompt);
     }
 }
 
@@ -210,5 +220,9 @@ try {
 } catch (e: any) {
     console.info("ChatGptWizard error --> Could not update UI:\n", e.stack)
 }
+
+window.addEventListener('hashchange', function(event) {
+    updateUI();
+});
 
 export {}
