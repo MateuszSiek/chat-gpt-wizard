@@ -5,8 +5,16 @@
 
 h1 {
   margin-bottom: 0;
+  text-align: center;
 }
 
 h6 {
   margin: 0;
+  text-align: center;
+}
+
+.editor-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }

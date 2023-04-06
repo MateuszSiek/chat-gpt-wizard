@@ -1,31 +1,67 @@
 .prompts-accordion {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
 .prompts-accordion .accordion-title-content {
-  display: flex;
-  gap: 16px;
-  align-items: center;
+    display: flex;
+    gap: 16px;
+    align-items: center;
 }
 
 .prompts-accordion .mantine-Switch-body {
-  flex-direction: column;
-  align-items: center;
+    flex-direction: column;
+    align-items: center;
 }
+
 .prompts-accordion .mantine-Switch-labelWrapper {
-  transform: translateY(calc(100% - 0.25rem));
-  bottom: 0;
-  position: absolute;
+    transform: translateY(calc(100% - 0.25rem));
+    bottom: 0;
+    position: absolute;
 }
 
 .prompts-accordion .mantine-Switch-label {
-  padding-left: 0;
-  font-size: 0.6rem;
-  opacity: 0.6;
+    padding-left: 0;
+    font-size: 0.6rem;
+    opacity: 0.6;
+}
+
+.prompts-accordion .mantine-Switch-trackLabel {
+    margin: 0 !important;
 }
 
 .prompts-accordion .mantine-Accordion-item {
-  margin-top: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.prompts-accordion .mantine-Accordion-control,
+.prompts-accordion .mantine-Accordion-content {
+    margin-left: 1rem;
+}
+
+.prompts-accordion .accordion-item-draggable {
+    position: relative;
+}
+
+.prompts-accordion .accordion-item-drag-handler {
+    display: flex;
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translatey(-50%);
+}
+
+.prompts-accordion .accordion-item-edit-actions {
+    margin-right: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.icon-button {
+    padding: 0;
+}
+
+img {
+    display: inline-block;
 }

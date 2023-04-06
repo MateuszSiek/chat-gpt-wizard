@@ -43,9 +43,11 @@ function App() {
         <main>
             <h1>ChatGpt Wizard 🪄</h1>
             <h6>v 0.0.0</h6>
-            <h2>Edit your prompts</h2>
-            {prompts && <PromptsAccordion data={prompts} updatePrompt={update} removePrompt={remove}/>}
-            <Button variant="outline" onClick={addPrompt} color="blue" compact>Add</Button>
+            <div className="editor-title">
+                <h2>Edit your prompts</h2>
+                <Button variant="outline" onClick={addPrompt} color="blue" >Add</Button>
+            </div>
+            {prompts?.length > 0 && <PromptsAccordion data={prompts} updatePrompt={update} removePrompt={remove}/>}
         </main>
     )
 }

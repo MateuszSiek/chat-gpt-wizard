@@ -1,0 +1,1 @@
+import{r as t,a as r,j as e,d as a,R as n}from"./chunk-fd2c61e9.js";function c(){return t.exports.useState("create-chrome-ext"),r("main",{children:[e("h3",{children:"Options Page!"}),e("h6",{children:"v 0.0.0"})]})}a.createRoot(document.getElementById("app")).render(e(n.StrictMode,{children:e(c,{})}));

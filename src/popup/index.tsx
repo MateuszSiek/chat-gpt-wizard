@@ -4,7 +4,7 @@ import App from './Popup'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('app') as HTMLElement).render(
-  <React.StrictMode>
+  <React.Fragment>
     <App />
-  </React.StrictMode>,
+  </React.Fragment>,
 )
