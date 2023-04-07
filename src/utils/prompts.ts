@@ -66,8 +66,8 @@ export const DefaultPrompts = [
 
 export const EmptyPrompt = {
     "id": "",
-    "name": "Helpful assistant",
-    "prompt": "You are a helpful assistant...",
+    "name": "",
+    "prompt": "",
     "active": true
 }
 

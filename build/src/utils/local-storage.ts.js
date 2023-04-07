@@ -10,6 +10,9 @@ async function initialiseLocalStorage() {
 async function getPrompts() {
   return localStorage.get("prompts").then(({ prompts }) => prompts);
 }
+async function setPrompts(data) {
+  return localStorage.set({ prompts: data }).then(({ prompts }) => prompts);
+}
 async function getActivePrompts() {
   const prompts = await getPrompts();
   return prompts.filter((prompt) => prompt.active);
@@ -57,4 +60,4 @@ async function getPromptFromHistory(chatId) {
   return prompts.find((prompt) => prompt.id === history?.promptId);
 }
 
-export { addNewPrompt, getActivePrompts, getHistory, getPromptFromHistory, getPrompts, getSelectedPrompt, initialiseLocalStorage, localStorage, removePrompt, setSelectedPrompt, updateHistory, updatePrompt };
+export { addNewPrompt, getActivePrompts, getHistory, getPromptFromHistory, getPrompts, getSelectedPrompt, initialiseLocalStorage, localStorage, removePrompt, setPrompts, setSelectedPrompt, updateHistory, updatePrompt };

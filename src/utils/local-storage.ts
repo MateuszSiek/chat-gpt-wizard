@@ -25,6 +25,10 @@ export async function getPrompts(): Promise<Prompt[]> {
     return localStorage.get('prompts').then(({prompts}) => prompts)
 }
 
+export async function setPrompts(data: Prompt[]): Promise<Prompt[]> {
+    return localStorage.set({prompts: data}).then(({prompts}) => prompts);
+}
+
 export async function getActivePrompts(): Promise<Prompt[]> {
     const prompts = await getPrompts();
     return prompts.filter(prompt => prompt.active);

@@ -1,16 +1,16 @@
 import './Popup.css'
 import {useEffect, useState} from 'react'
-import {addNewPrompt, getPrompts, removePrompt, updatePrompt} from "../utils/local-storage";
+import {addNewPrompt, getPrompts, removePrompt, setPrompts, updatePrompt} from "../utils/local-storage";
 import {PromptsAccordion} from "./Accordion";
 import {Button} from "@mantine/core";
 import {Prompt} from "../utils/prompts";
 
 function App() {
-    const [prompts, setPrompts] = useState<Prompt[]>([])
+    const [promptsState, setPromptsState] = useState<Prompt[]>([])
 
     useEffect(() => {
         getPrompts().then((prompts) => {
-            setPrompts(prompts);
+            setPromptsState(prompts);
         });
     }, [])
 
@@ -24,19 +24,25 @@ function App() {
     // }
     const addPrompt = () => {
         addNewPrompt().then((prompts) => {
-            setPrompts(prompts);
+            setPromptsState(prompts);
         });
     }
     const remove = (id: string) => {
         removePrompt(id).then((prompts) => {
-            setPrompts(prompts);
+            setPromptsState(prompts);
         })
     }
 
     const update = (data: Partial<Prompt>) => {
         updatePrompt(data).then((prompts) => {
-            setPrompts(prompts);
+            setPromptsState(prompts);
         })
+    }
+
+    const set = (data: Prompt[]) => {
+        setPromptsState(data);
+        setPrompts(data).then(() => {
+        });
     }
 
     return (
@@ -45,9 +51,10 @@ function App() {
             <h6>v 0.0.0</h6>
             <div className="editor-title">
                 <h2>Edit your prompts</h2>
-                <Button variant="outline" onClick={addPrompt} color="blue" >Add</Button>
+                <Button variant="outline" onClick={addPrompt} color="blue">Add</Button>
             </div>
-            {prompts?.length > 0 && <PromptsAccordion data={prompts} updatePrompt={update} removePrompt={remove}/>}
+            {promptsState?.length > 0 &&
+                <PromptsAccordion data={promptsState} updatePrompt={update} removePrompt={remove} setPrompts={set}/>}
         </main>
     )
 }

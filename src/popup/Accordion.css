@@ -1,0 +1,79 @@
+.prompts-accordion {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.accordion-title-content {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.mantine-Switch-body {
+    flex-direction: column;
+    align-items: center;
+}
+
+.mantine-Switch-labelWrapper {
+    transform: translateY(calc(100% - 0.25rem));
+    bottom: 0;
+    position: absolute;
+}
+
+.mantine-Switch-label {
+    padding-left: 0;
+    font-size: 0.6rem;
+    opacity: 0.6;
+}
+
+.mantine-Switch-trackLabel {
+    margin: 0 !important;
+}
+
+.mantine-Accordion-item {
+    margin-top: 0.5rem;
+}
+
+.mantine-Accordion-control,
+.mantine-Accordion-content {
+    margin-left: 1rem;
+}
+
+.accordion-item-draggable {
+    position: relative;
+}
+
+.accordion-item-drag-handler {
+    display: flex;
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translatey(-50%);
+}
+
+.accordion-item-edit-actions {
+    margin-right: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.accordion-item-delete-confirm {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: calc(100% - 0.5rem);
+    height: 100%;
+    z-index: 1;
+}
+
+.accordion-header-wrapper {
+    position: relative;
+}
+
+.accordion-item-delete-confirm-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
