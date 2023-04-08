@@ -1,7 +1,7 @@
 {
-  "name": "chat-gpt-wizard",
+  "name": "ChatGPT wizard",
   "description": "A chrome extension that gives you additional control over chatGPT",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "manifest_version": 3,
   "icons": {
     "16": "img/logo-16.png",
@@ -21,10 +21,13 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content-script-loader.index.tsx.js.js"
+        "assets/content-script-loader.chunk-a69e477f.1545a3f2.js"
       ],
       "matches": [
         "https://chat.openai.com/chat*"
+      ],
+      "css": [
+        "assets/index.tsx.74bf64cf.css"
       ]
     }
   ],
@@ -43,11 +46,12 @@
     },
     {
       "matches": [
-        "<all_urls>"
+        "https://chat.openai.com/*"
       ],
       "resources": [
-        "**/*",
-        "*"
+        "assets/chunk-ae48fd96.js",
+        "assets/chunk-3878167f.js",
+        "assets/chunk-a69e477f.js"
       ],
       "use_dynamic_url": true
     }

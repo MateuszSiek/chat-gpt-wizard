@@ -1,10 +1,12 @@
 import { defineManifest } from "@crxjs/vite-plugin";
+import packageJson from '../package.json'
+const { version } = packageJson
 
 export default defineManifest({
-  name: "chat-gpt-wizard",
+  name: "ChatGPT wizard",
   description:
     "A chrome extension that gives you additional control over chatGPT",
-  version: "0.0.0",
+  version: version,
   manifest_version: 3,
   icons: {
     "16": "img/logo-16.png",
