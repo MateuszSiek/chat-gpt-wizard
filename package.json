@@ -1,6 +1,6 @@
 {
   "name": "chat-gpt-wizard",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "author": "Mateusz Siek ",
   "description": "A chrome extension that gives you additional control over chatGPT",
   "type": "module",

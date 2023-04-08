@@ -4,8 +4,13 @@ import { DefaultPrompts, EmptyPrompt } from './prompts.ts.js';
 const getRandomId = () => Math.floor(Math.random() * 1e9).toString();
 const localStorage = getBucket("store");
 async function initialiseLocalStorage() {
-  console.log("initialiseLocalStorage");
-  return localStorage.set({ prompts: DefaultPrompts, promptsHistory: [], selectedPromptId: "" });
+  return localStorage.set({ prompts: DefaultPrompts, promptsHistory: [], selectedPromptId: "", userPreferences: {} });
+}
+async function getPreferredTheme() {
+  return localStorage.get("userPreferences").then(({ userPreferences }) => userPreferences.theme);
+}
+async function setPreferredTheme(theme) {
+  return localStorage.set({ userPreferences: { theme } }).then(({ userPreferences }) => userPreferences.theme);
 }
 async function getPrompts() {
   return localStorage.get("prompts").then(({ prompts }) => prompts);
@@ -60,4 +65,4 @@ async function getPromptFromHistory(chatId) {
   return prompts.find((prompt) => prompt.id === history?.promptId);
 }
 
-export { addNewPrompt, getActivePrompts, getHistory, getPromptFromHistory, getPrompts, getSelectedPrompt, initialiseLocalStorage, localStorage, removePrompt, setPrompts, setSelectedPrompt, updateHistory, updatePrompt };
+export { addNewPrompt, getActivePrompts, getHistory, getPreferredTheme, getPromptFromHistory, getPrompts, getSelectedPrompt, initialiseLocalStorage, localStorage, removePrompt, setPreferredTheme, setPrompts, setSelectedPrompt, updateHistory, updatePrompt };

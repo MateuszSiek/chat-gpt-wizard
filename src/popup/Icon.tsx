@@ -15,7 +15,7 @@ interface IconButtonProps extends IconProps {
 export function Icon({name, alt}: IconProps) {
     const src = `icons/${name}.svg`;
     return (
-        <img src={src} alt={alt}/>
+        <img className="icon" src={src} alt={alt}/>
     )
 }
 

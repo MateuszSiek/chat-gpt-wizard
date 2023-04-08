@@ -1,17 +1,6 @@
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-}
-
 @media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
   a:hover {
-    color: #747bff;
+    color: #10a37f;
   }
 }
 
@@ -20,6 +9,11 @@ body {
 }
 
 #app {
+  position: relative;
   margin: auto;
   max-width: 100ch;
+}
+
+:focus {
+  outline-color: #10a37f;
 }

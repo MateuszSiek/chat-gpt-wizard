@@ -8,7 +8,14 @@ interface PromptHistory {
     chatId: string;
 }
 
+type Theme = 'light' | 'dark';
+
+interface UserPreferences {
+    theme?: Theme;
+}
+
 export interface Store {
+    userPreferences: UserPreferences;
     prompts: Prompt[];
     selectedPromptId: string;
     promptsHistory: PromptHistory[];
@@ -17,10 +24,24 @@ export interface Store {
 export const localStorage = getBucket<Store>('store')
 
 export async function initialiseLocalStorage() {
-    console.log('initialiseLocalStorage');
-    return localStorage.set({prompts: DefaultPrompts, promptsHistory: [], selectedPromptId: ''})
+    return localStorage.set({prompts: DefaultPrompts, promptsHistory: [], selectedPromptId: '', userPreferences: {}})
 }
 
+// ------------------------------
+// USER SETTINGS
+// ------------------------------
+export async function getPreferredTheme(): Promise<Theme | undefined> {
+    return localStorage.get('userPreferences').then(({userPreferences}) => userPreferences.theme);
+}
+
+export async function setPreferredTheme(theme: Theme): Promise<Theme> {
+    return localStorage.set({userPreferences: {theme}}).then(({userPreferences}) => userPreferences.theme!);
+}
+
+
+// ------------------------------
+// PROMPTS
+// ------------------------------
 export async function getPrompts(): Promise<Prompt[]> {
     return localStorage.get('prompts').then(({prompts}) => prompts)
 }
@@ -71,7 +92,9 @@ export async function getSelectedPrompt(): Promise<Prompt | undefined> {
     return prompts.find(prompt => prompt.id === selectedPromptId) || EmptyPrompt;
 }
 
+// ------------------------------
 // HISTORY
+// ------------------------------
 export async function updateHistory(chatId: string, promptId: string): Promise<PromptHistory[]> {
     const {promptsHistory} = await localStorage.get('promptsHistory');
     const newHistory = [...promptsHistory, {chatId, promptId}];

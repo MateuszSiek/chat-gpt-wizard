@@ -32,12 +32,12 @@
 }
 
 .mantine-Accordion-item {
-    margin-top: 0.5rem;
+    margin-top: var(--mantine-spacing-xs);
 }
 
 .mantine-Accordion-control,
 .mantine-Accordion-content {
-    margin-left: 1rem;
+    margin-left: var(--mantine-spacing-md);
 }
 
 .accordion-item-draggable {
@@ -50,12 +50,13 @@
     top: 50%;
     left: 5px;
     transform: translatey(-50%);
+    z-index: 1;
 }
 
 .accordion-item-edit-actions {
     margin-right: 1rem;
     display: flex;
-    gap: 1rem;
+    gap: var(--mantine-spacing-md);
 }
 
 .accordion-item-delete-confirm {
@@ -63,7 +64,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    width: calc(100% - 0.5rem);
+    width: calc(100% - var(--mantine-spacing-xs));
     height: 100%;
     z-index: 1;
 }
@@ -74,6 +75,6 @@
 
 .accordion-item-delete-confirm-buttons {
     display: flex;
-    gap: 0.5rem;
+    gap: var(--mantine-spacing-xs);
     align-items: center;
 }
