@@ -1,80 +1,80 @@
 .prompts-accordion {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .accordion-title-content {
-    display: flex;
-    gap: 16px;
-    align-items: center;
+  display: flex;
+  gap: 16px;
+  align-items: center;
 }
 
 .mantine-Switch-body {
-    flex-direction: column;
-    align-items: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 .mantine-Switch-labelWrapper {
-    transform: translateY(calc(100% - 0.25rem));
-    bottom: 0;
-    position: absolute;
+  transform: translateY(calc(100% - 0.25rem));
+  bottom: 0;
+  position: absolute;
 }
 
 .mantine-Switch-label {
-    padding-left: 0;
-    font-size: 0.6rem;
-    opacity: 0.6;
+  padding-left: 0;
+  font-size: 0.6rem;
+  opacity: 0.6;
 }
 
 .mantine-Switch-trackLabel {
-    margin: 0 !important;
+  margin: 0 !important;
 }
 
 .mantine-Accordion-item {
-    margin-top: var(--mantine-spacing-xs);
+  margin-top: var(--mantine-spacing-xs);
 }
 
 .mantine-Accordion-control,
 .mantine-Accordion-content {
-    margin-left: var(--mantine-spacing-md);
+  margin-left: var(--mantine-spacing-md);
 }
 
 .accordion-item-draggable {
-    position: relative;
+  position: relative;
 }
 
 .accordion-item-drag-handler {
-    display: flex;
-    position: absolute;
-    top: 50%;
-    left: 5px;
-    transform: translatey(-50%);
-    z-index: 1;
+  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  transform: translatey(-50%);
+  z-index: 1;
 }
 
 .accordion-item-edit-actions {
-    margin-right: 1rem;
-    display: flex;
-    gap: var(--mantine-spacing-md);
+  margin-right: 1rem;
+  display: flex;
+  gap: var(--mantine-spacing-md);
 }
 
 .accordion-item-delete-confirm {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    width: calc(100% - var(--mantine-spacing-xs));
-    height: 100%;
-    z-index: 1;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: calc(100% - var(--mantine-spacing-xs));
+  height: 100%;
+  z-index: 1;
 }
 
 .accordion-header-wrapper {
-    position: relative;
+  position: relative;
 }
 
 .accordion-item-delete-confirm-buttons {
-    display: flex;
-    gap: var(--mantine-spacing-xs);
-    align-items: center;
+  display: flex;
+  gap: var(--mantine-spacing-xs);
+  align-items: center;
 }
