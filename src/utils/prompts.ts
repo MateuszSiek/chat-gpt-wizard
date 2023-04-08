@@ -5,6 +5,7 @@ export interface Prompt {
     prompt: string;
     active: boolean;
     placeholder?: string;
+    instructions?: string;
 }
 
 export const DefaultPrompts = [
@@ -13,27 +14,31 @@ export const DefaultPrompts = [
         "name": "Travel Guide",
         "prompt": "I want you to act as a travel guide. I will write you my location and you will suggest a place to visit near my location. In some cases, I will also give you the type of places I will visit. You will also suggest me places of similar type that are close to my first location. My first suggestion request is: \n",
         "active": true,
-        "placeholder": "Location and place you want to visit"
+        "placeholder": "Location and place you want to visit",
+        "instructions": "You can write your location and the type of place you want to visit. For example: \"London, England, UK, Museum\""
     },
     {
         "id": "2",
         "name": "Personal Trainer",
         "prompt": "I want you to act as a personal trainer. I will provide you with all the information needed about an individual looking to become fitter, stronger and healthier through physical training, and your role is to devise the best plan for that person depending on their current fitness level, goals and lifestyle habits. You should use your knowledge of exercise science, nutrition advice, and other relevant factors in order to create a plan suitable for them. My first request is: \n",
-        "active": true
+        "active": true,
+        "instructions": "Chat will act as a personal trainer"
     },
     {
         "id": "3",
         "name": "Mental Health Adviser",
         "prompt": "I want you to act as a mental health adviser. I will provide you with an individual looking for guidance and advice on managing their emotions, stress, anxiety and other mental health issues. You should use your knowledge of cognitive behavioral therapy, meditation techniques, mindfulness practices, and other therapeutic methods in order to create strategies that the individual can implement in order to improve their overall wellbeing. My first request is: \n",
         "active": true,
-        "placeholder": "What do you need help with?"
+        "placeholder": "What do you need help with?",
+        "instructions": "Chat will act as a mental health adviser, you can ask for help with anything related to mental health"
     },
     {
         "id": "4",
         "name": "Fancy Title Generator",
         "prompt": "I want you to act as a fancy title generator. I will type keywords via comma and you will reply with fancy titles. my first keywords are: \n",
         "active": true,
-        "placeholder": "Provide bunch of keywords"
+        "placeholder": "Your keywords...",
+        "instructions": "Provide list of comma separated keywords. Chat will generate fancy titles for you."
     },
     {
         "id": "5",

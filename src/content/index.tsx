@@ -131,7 +131,13 @@ const PromptsDropdown = () => {
 				${prompts.map(({name, id}: Prompt) => html`
 					<option value="${id}" selected=${selectedId === id && "selected"}>${name}</option>`)}
 			</select>
-		</div>`;
+			${selectedPrompt?.instructions && html`
+				<div class="chat-gpt-wizard--select-instructions text-xs text-black/50 dark:text-white/50">
+                    ${selectedPrompt?.instructions}
+                </div>
+			`}
+		</div>
+    `;
 }
 
 function renderCommands(container: any) {
@@ -161,7 +167,7 @@ async function updateSelectUI() {
 
 function setTextPlaceholder(prompt?: Prompt): void {
     const textArea: HTMLTextAreaElement | null = getTextarea();
-    if(!textArea) return;
+    if (!textArea) return;
     textArea!.placeholder = prompt?.placeholder || "Send a message...";
 }
 
@@ -221,7 +227,7 @@ try {
     console.info("ChatGptWizard error --> Could not update UI:\n", e.stack)
 }
 
-window.addEventListener('hashchange', function(event) {
+window.addEventListener('hashchange', function (event) {
     updateUI();
 });
 

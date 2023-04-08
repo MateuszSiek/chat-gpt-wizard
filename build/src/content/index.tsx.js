@@ -131,7 +131,13 @@ const PromptsDropdown = () => {
   }) => m`
 					<option value="${id}" selected=${selectedId === id && "selected"}>${name}</option>`)}
 			</select>
-		</div>`;
+			${selectedPrompt?.instructions && m`
+				<div class="chat-gpt-wizard--select-instructions text-xs text-black/50 dark:text-white/50">
+                    ${selectedPrompt?.instructions}
+                </div>
+			`}
+		</div>
+    `;
 };
 _s(PromptsDropdown, "ZVyoSuKQ9d/TAZX2prNlTwAQDQw=");
 _c = PromptsDropdown;

@@ -4,7 +4,7 @@
   (async () => {
     await import(
       /* @vite-ignore */
-      chrome.runtime.getURL("assets/chunk-4ee99c11.js")
+      chrome.runtime.getURL("assets/chunk-988b1d14.js")
     );
   })().catch(console.error);
 
