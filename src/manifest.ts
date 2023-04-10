@@ -3,7 +3,7 @@ import packageJson from '../package.json'
 const { version } = packageJson
 
 export default defineManifest({
-  name: "ChatGPT wizard",
+  name: "ChatGPT Prompt Wizard",
   description:
     "A chrome extension that gives you additional control over chatGPT",
   version: version,

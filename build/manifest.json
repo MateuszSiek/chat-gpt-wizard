@@ -1,5 +1,5 @@
 {
-  "name": "ChatGPT wizard",
+  "name": "ChatGPT Prompt Wizard",
   "description": "A chrome extension that gives you additional control over chatGPT",
   "version": "0.1.0",
   "manifest_version": 3,
