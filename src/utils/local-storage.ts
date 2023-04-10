@@ -1,7 +1,6 @@
 import { getBucket } from "@extend-chrome/storage";
+import { v4 as uuidv4 } from "uuid";
 import { DefaultPrompts, EmptyPrompt, Prompt } from "./prompts";
-
-const getRandomId = () => Math.floor(Math.random() * 1000000000).toString();
 
 interface PromptHistory {
   promptId: string;
@@ -65,10 +64,10 @@ export async function getActivePrompts(): Promise<Prompt[]> {
 
 export async function addNewPrompt() {
   const prompts = await getPrompts();
-  const newPrompt = { ...EmptyPrompt, id: getRandomId() };
+  const newPrompt = { ...EmptyPrompt, id: uuidv4(), active: false };
 
   return localStorage
-    .set({ prompts: [...prompts, newPrompt] })
+    .set({ prompts: [newPrompt, ...prompts] })
     .then(({ prompts }) => prompts);
 }
 
