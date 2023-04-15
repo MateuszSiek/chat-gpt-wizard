@@ -1,5 +1,4 @@
 import { getBucket } from "@extend-chrome/storage";
-import { v4 as uuidv4 } from "uuid";
 import { DefaultPrompts, EmptyPrompt, Prompt } from "./prompts";
 
 interface PromptHistory {
@@ -57,14 +56,32 @@ export async function setPrompts(data: Prompt[]): Promise<Prompt[]> {
   return localStorage.set({ prompts: data }).then(({ prompts }) => prompts);
 }
 
+export async function getPrompt(id: string): Promise<Prompt | undefined> {
+  const prompts = await getPrompts();
+  return prompts.find((prompt) => prompt.id === id);
+}
+
 export async function getActivePrompts(): Promise<Prompt[]> {
   const prompts = await getPrompts();
   return prompts.filter((prompt) => prompt.active);
 }
 
+function generateID(maxLength: number = 5): string {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+  let result = "";
+
+  for (let i = 0; i < maxLength; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+
+  return result;
+}
+
 export async function addNewPrompt() {
   const prompts = await getPrompts();
-  const newPrompt = { ...EmptyPrompt, id: uuidv4(), active: false };
+  const newPrompt = { ...EmptyPrompt, id: generateID(), active: false };
 
   return localStorage
     .set({ prompts: [newPrompt, ...prompts] })
@@ -105,33 +122,4 @@ export async function getSelectedPrompt(): Promise<Prompt | undefined> {
   return (
     prompts.find((prompt) => prompt.id === selectedPromptId) || EmptyPrompt
   );
-}
-
-// ------------------------------
-// HISTORY
-// ------------------------------
-export async function updateHistory(
-  chatId: string,
-  promptId: string
-): Promise<PromptHistory[]> {
-  const { promptsHistory } = await localStorage.get("promptsHistory");
-  const newHistory = [...promptsHistory, { chatId, promptId }];
-
-  return localStorage
-    .set({ promptsHistory: newHistory })
-    .then(({ promptsHistory }) => promptsHistory);
-}
-
-export async function getHistory(chatId: string): Promise<PromptHistory> {
-  const { promptsHistory } = await localStorage.get("promptsHistory");
-  return promptsHistory.filter((history) => history.chatId === chatId)[0];
-}
-
-export async function getPromptFromHistory(
-  chatId: string
-): Promise<Prompt | undefined> {
-  const history = await getHistory(chatId);
-  const prompts = await getPrompts();
-
-  return prompts.find((prompt) => prompt.id === history?.promptId);
 }

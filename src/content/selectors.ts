@@ -21,7 +21,7 @@ export function getUi(): HTMLButtonElement | null {
   return rootEl.querySelector("." + UI_SELECTOR_CLASS);
 }
 
-export function getDescriptionUi(): HTMLButtonElement | null {
+export function getInfoUi(): HTMLButtonElement | null {
   const rootEl = getRootElement();
   return rootEl.querySelector("." + DESCRIPTION_CLASS);
 }

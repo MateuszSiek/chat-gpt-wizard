@@ -22,7 +22,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content-script-loader.chunk-8b821816.5a72f71f.js"
+        "assets/content-script-loader.chunk-03b74be8.79b93f09.js"
       ],
       "matches": [
         "https://chat.openai.com/*"
@@ -50,17 +50,14 @@
         "https://chat.openai.com/*"
       ],
       "resources": [
-        "assets/chunk-83225f40.js",
-        "assets/chunk-744baaec.js",
-        "assets/chunk-8b821816.js"
+        "assets/chunk-3dfaece1.js",
+        "assets/chunk-03b74be8.js"
       ],
       "use_dynamic_url": true
     }
   ],
   "permissions": [
-    "storage",
-    "webRequest",
-    "tabs"
+    "storage"
   ],
   "host_permissions": [
     "https://chat.openai.com/*"

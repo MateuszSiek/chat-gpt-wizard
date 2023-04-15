@@ -1,9 +1,4 @@
 .chat-gpt-wizard--select-wrapper {
-  /*position: absolute;*/
-  /*top: 0;*/
-  /*left: 0;*/
-  /*width: 100%;*/
-  /*transform: translateY(calc(-4px - 100%));*/
   text-align: center;
 }
 
@@ -13,12 +8,3 @@
   height: 3rem;
   background-color: transparent;
 }
-
-/*.dark .chat-gpt-wizard--select-wrapper select {*/
-/*    background-color: rgba(64,65,79, 1);*/
-/*    border-color: rgba(32,33,35,.5);*/
-/*}*/
-
-/*.light .chat-gpt-wizard--select-wrapper select {*/
-/*    border-color: rgba(0,0,0,.1);*/
-/*}*/
