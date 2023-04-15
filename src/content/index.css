@@ -1,9 +1,9 @@
 .chat-gpt-wizard--select-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  transform: translateY(calc(-4px - 100%));
+  /*position: absolute;*/
+  /*top: 0;*/
+  /*left: 0;*/
+  /*width: 100%;*/
+  /*transform: translateY(calc(-4px - 100%));*/
   text-align: center;
 }
 

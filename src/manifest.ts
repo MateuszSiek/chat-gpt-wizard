@@ -3,10 +3,12 @@ import packageJson from '../package.json'
 const { version } = packageJson
 
 export default defineManifest({
-  name: "ChatGPT Prompt Wizard",
+  name: "ChatGPT Prompt Wizard BETA",
   description:
-    "A chrome extension that gives you additional control over chatGPT",
+    "Streamline ChatGPT experience: select saved prompts for efficient control and tailored queries.\n" +
+    "THIS EXTENSION IS FOR BETA TESTING",
   version: version,
+  version_name: version + " beta",
   manifest_version: 3,
   icons: {
     "16": "img/logo-16.png",
@@ -25,7 +27,7 @@ export default defineManifest({
   },
   content_scripts: [
     {
-      matches: ["https://chat.openai.com/chat*"],
+      matches: ["https://chat.openai.com/*"],
       js: ["src/content/index.tsx"],
     },
   ],
@@ -41,5 +43,5 @@ export default defineManifest({
     },
   ],
   permissions: ["storage", "webRequest", "tabs"],
-  host_permissions: ["<all_urls>"],
+  host_permissions: ["https://chat.openai.com/*"],
 });

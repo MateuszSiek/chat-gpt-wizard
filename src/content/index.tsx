@@ -11,14 +11,18 @@ import Browser from "webextension-polyfill";
 import { render, html } from "htm/preact";
 import { useState, useEffect } from "preact/hooks";
 import {
+  DESCRIPTION_CLASS,
   getButton,
   getChatMessages,
-  getModelTitle,
+  getDescriptionUi,
   getRootElement,
+  getShadowRoot,
   getTextarea,
   getUi,
   MESSAGE_GROUP_SELECTOR,
   MESSAGE_SELECTOR,
+  SHADOW_ROOT_CLASS,
+  UI_SELECTOR_CLASS,
 } from "./selectors";
 import {
   createShadowRoot,
@@ -28,7 +32,7 @@ import {
 } from "./util";
 import { Prompt } from "../utils/prompts";
 
-console.info("chrome-ext template-react-ts content scrip");
+console.info("ChatGPT Prompt Wizard loaded");
 
 let selectedPrompt: Prompt | undefined = undefined;
 let awaitingHistoryUpdate = false;
@@ -36,12 +40,10 @@ let currentChatId: string | undefined = undefined;
 
 getSelectedPrompt().then((prompt) => {
   selectedPrompt = prompt;
-  // console.log("selectedPrompt", selectedPrompt);
 });
 
 Browser.runtime.onMessage.addListener(({ type, payload }) => {
   if (type === "chat-id" && awaitingHistoryUpdate && selectedPrompt) {
-    console.log("Browser message", payload);
     awaitingHistoryUpdate = false;
     currentChatId = payload;
     updateHistory(payload, selectedPrompt?.id);
@@ -49,14 +51,10 @@ Browser.runtime.onMessage.addListener(({ type, payload }) => {
   }
 });
 
-localStorage.valueStream.subscribe((values) => {
-  // console.log('Everything in this bucket', values)
-});
-
 function onSubmit() {
   const textArea: HTMLTextAreaElement | null = getTextarea();
   const chatMessages = getChatMessages();
-  console.log("onSubmit", selectedPrompt, textArea, chatMessages);
+  // console.log("onSubmit", selectedPrompt, textArea, chatMessages);
   removeSelectUI();
   if (!textArea || !selectedPrompt || chatMessages.length > 0) {
     return;
@@ -118,9 +116,7 @@ observer.observe(document, { childList: true, subtree: true });
 
 const PromptsDropdown = () => {
   const [prompts, setPrompts] = useState<Prompt[]>([]);
-  const [selectedId, setSelectedId] = useState<string | undefined>(
-    selectedPrompt && selectedPrompt.id
-  );
+  const [selectedId, setSelectedId] = useState<string | undefined>();
   useEffect(() => {
     Promise.all([getActivePrompts(), getSelectedPrompt()]).then(
       ([prompts, prompt]) => {
@@ -128,6 +124,15 @@ const PromptsDropdown = () => {
         setSelectedId(prompt && prompt.id);
       }
     );
+  }, []);
+
+  useEffect(() => {
+    const sub = localStorage.changeStream.subscribe(({ prompts }) => {
+      if (prompts?.newValue) {
+        setPrompts(prompts.newValue);
+      }
+    });
+    return () => sub.unsubscribe();
   }, []);
 
   const handleChange = (event: any) => {
@@ -187,12 +192,14 @@ async function updateSelectUI() {
   const textarea = getTextarea()!;
   const textareaParentParent: any = textarea.parentElement!.parentElement;
 
-  const shadowRootDiv = createShadowRoot();
-  shadowRootDiv.classList.add("chat-gpt-wizard--shadow-root");
-  textareaParentParent.appendChild(shadowRootDiv);
+  if (!getShadowRoot()) {
+    const shadowRootDiv = createShadowRoot();
+    shadowRootDiv.classList.add(SHADOW_ROOT_CLASS);
+    textareaParentParent.appendChild(shadowRootDiv);
+  }
 
   let ui = document.createElement("div");
-  ui.classList.add("chat-gpt-wizard");
+  ui.classList.add(UI_SELECTOR_CLASS);
   const form = document.querySelector("form");
   form!.parentElement!.insertBefore(ui, form!.parentElement!.firstChild);
 
@@ -211,16 +218,29 @@ async function updateInfoUI({
   chatId,
   prompt,
 }: { chatId?: string; prompt?: Prompt } = {}) {
-  const modelTitle = getModelTitle();
+  const textarea = getTextarea();
   const currentId = chatId || getCurrentChatId();
   const historyPrompt =
     prompt || (currentId && (await getPromptFromHistory(currentId)));
 
-  console.log("updateInfoUI", modelTitle, currentId, historyPrompt);
-  if (modelTitle && historyPrompt) {
-    const title = modelTitle.innerText;
-    modelTitle.innerText =
-      title + " --- ChatGptWizard prompt: " + historyPrompt.name;
+  if (textarea && historyPrompt) {
+    const textareaParentParent: any = textarea!.parentElement!.parentElement;
+    let description = document.createElement("div");
+
+    description.classList.add(
+      DESCRIPTION_CLASS,
+      "text-center",
+      "text-xs",
+      "text-black/50",
+      "dark:text-white/50"
+    );
+
+    textareaParentParent!.insertBefore(
+      description,
+      textareaParentParent!.lastElementChild.nextSibling
+    );
+
+    description.innerText = "ChatGptWizard prompt: " + historyPrompt.name;
     setTextPlaceholder(historyPrompt);
   }
 }
@@ -230,12 +250,16 @@ function removeSelectUI() {
   ui && ui.remove();
 }
 
+function removeDescriptionUI() {
+  const ui = getDescriptionUi();
+  ui && ui.remove();
+}
+
 async function updateUI() {
-  const ui = getUi();
   const button = getButton();
   const textarea = getTextarea();
   const chatMessages = getChatMessages();
-  console.log("updateUI", ui, chatMessages, textarea);
+  // console.log("updateUI");
 
   hideUiPrompts(getRootElement());
 
@@ -248,6 +272,7 @@ async function updateUI() {
   hijackEvents();
 
   if (button && textarea) {
+    removeDescriptionUI();
     await updateSelectUI();
   }
 }
@@ -255,11 +280,17 @@ async function updateUI() {
 updateUI();
 
 const rootEl = getRootElement();
+const form = document.querySelector("form");
 
 try {
   new MutationObserver(() => {
     updateUI();
   }).observe(rootEl, { childList: true });
+  if (form) {
+    new MutationObserver(() => {
+      updateUI();
+    }).observe(form, { childList: true, subtree: true });
+  }
 } catch (e: any) {
   console.info("ChatGptWizard error --> Could not update UI:\n", e.stack);
 }
