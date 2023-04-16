@@ -60,12 +60,7 @@ export default function PromptsDropdown({
       >
         Select prompt
       </div>
-      <select
-        onChange=${handleChange}
-        class=${SELECT_CLASS}
-        name="cars"
-        id="cars"
-      >
+      <select onChange=${handleChange} class=${SELECT_CLASS}>
         <option value="" selected=${!selected?.id && "selected"}></option>
         ${prompts.map(
           ({ name, id }: Prompt) => html` <option

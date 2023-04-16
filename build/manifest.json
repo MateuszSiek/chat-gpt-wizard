@@ -14,7 +14,6 @@
     "default_popup": "popup.html",
     "default_icon": "img/logo-48.png"
   },
-  "options_page": "options.html",
   "background": {
     "service_worker": "service-worker-loader.js",
     "type": "module"
@@ -22,7 +21,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content-script-loader.chunk-03b74be8.79b93f09.js"
+        "assets/content-script-loader.chunk-d75721d4.5636b35e.js"
       ],
       "matches": [
         "https://chat.openai.com/*"
@@ -51,7 +50,7 @@
       ],
       "resources": [
         "assets/chunk-3dfaece1.js",
-        "assets/chunk-03b74be8.js"
+        "assets/chunk-d75721d4.js"
       ],
       "use_dynamic_url": true
     }

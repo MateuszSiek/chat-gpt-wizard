@@ -31,11 +31,6 @@ export async function updateUI() {
   const textarea = getTextarea();
   const chatMessages = getChatMessages();
 
-  console.log("ChatGPT Prompt Wizard updateUI", {
-    button,
-    textarea,
-    chatMessages,
-  });
   hideUiPrompts(getRootElement());
 
   if (chatMessages.length > 0) {
