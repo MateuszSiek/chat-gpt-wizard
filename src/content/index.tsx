@@ -26,7 +26,7 @@ const hijackEvents = () => {
   HijackKeyboardEvents(textarea);
 };
 
-export async function updateUI() {
+export function updateUI() {
   const button = getButton();
   const textarea = getTextarea();
   const chatMessages = getChatMessages();
@@ -42,48 +42,59 @@ export async function updateUI() {
 
   if (button && textarea) {
     removeInfoUI();
-    await updateSelectUI();
+    updateSelectUI();
   }
 }
 
 updateUI();
 const rootEl = getRootElement();
 const form = document.querySelector("form");
-
+console.log("form", form);
 try {
-  new MutationObserver(() => {
+  new MutationObserver((mutationsList) => {
+    console.log("MutationObserver1");
     updateUI();
-  }).observe(rootEl, { childList: true });
-  if (form) {
-    new MutationObserver(() => {
-      updateUI();
-    }).observe(form, { childList: true, subtree: true });
-  }
+    for (const mutation of mutationsList) {
+      if (mutation.type === "childList") {
+        const addedNodes = Array.from(mutation.addedNodes);
+
+        addedNodes.forEach((node: any) => {
+          if (node.matches && node.matches(MESSAGE_GROUP_SELECTOR)) {
+            hideUiPrompts(node);
+          }
+          if (node.matches && node.matches(MESSAGE_SELECTOR)) {
+            hideNodePrompt(node);
+          }
+        });
+      }
+    }
+  }).observe(rootEl, { childList: true, subtree: true });
 } catch (e: any) {
   console.info("ChatGptWizard error --> Could not update UI:\n", e.stack);
 }
 
 window.addEventListener("hashchange", function (event) {
+  console.log("MutationObserver3");
   updateUI();
 });
 
-const observer = new MutationObserver((mutationsList) => {
-  for (const mutation of mutationsList) {
-    if (mutation.type === "childList") {
-      const addedNodes = Array.from(mutation.addedNodes);
-
-      addedNodes.forEach((node: any) => {
-        if (node.matches && node.matches(MESSAGE_GROUP_SELECTOR)) {
-          hideUiPrompts(node);
-        }
-        if (node.matches && node.matches(MESSAGE_SELECTOR)) {
-          hideNodePrompt(node);
-        }
-      });
-    }
-  }
-});
-
-observer.observe(document, { childList: true, subtree: true });
+// const observer = new MutationObserver((mutationsList) => {
+//   for (const mutation of mutationsList) {
+//     if (mutation.type === "childList") {
+//       const addedNodes = Array.from(mutation.addedNodes);
+//
+//       addedNodes.forEach((node: any) => {
+//         if (node.matches && node.matches(MESSAGE_GROUP_SELECTOR)) {
+//           hideUiPrompts(node);
+//         }
+//         if (node.matches && node.matches(MESSAGE_SELECTOR)) {
+//           hideNodePrompt(node);
+//         }
+//       });
+//     }
+//   }
+// });
+//
+// observer.observe(document, { childList: true, subtree: true });
 
 export {};

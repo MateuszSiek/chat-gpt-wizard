@@ -20,13 +20,17 @@ export default function PromptsDropdown({
   const [localStorageUpdate, setLocalStorageUpdate] =
     useState<Changes<Store>>();
 
+  const setLatestPrompts = () => {
+    getActivePrompts().then((prompts) => {
+      setPrompts(prompts);
+    });
+  };
+
   useEffect(() => {
-    Promise.all([getActivePrompts(), getSelectedPrompt()]).then(
-      ([prompts, prompt]) => {
-        setPrompts(prompts);
-        setSelected(prompt);
-      }
-    );
+    setLatestPrompts();
+    getSelectedPrompt().then((prompt) => {
+      setSelected(prompt);
+    });
     const sub = localStorage.changeStream.subscribe(setLocalStorageUpdate);
     return () => sub.unsubscribe();
   }, []);
@@ -39,14 +43,13 @@ export default function PromptsDropdown({
       setSelected(prompt);
     }
     if (localStorageUpdate?.prompts?.newValue) {
-      setPrompts(localStorageUpdate?.prompts.newValue);
+      setLatestPrompts();
     }
   }, [localStorageUpdate]);
 
   const handleChange = (event: any) => {
-    const prompt = prompts.find(({ id }) => id === event.target.value);
-    const selectedPromptId = prompt?.id;
-    selectedPromptId && setSelectedPrompt(selectedPromptId);
+    const prompt = prompts.find(({ id }) => id === event?.target?.value);
+    setSelectedPrompt(prompt?.id).then(() => {});
     setSelected(prompt);
     onChange(prompt);
   };

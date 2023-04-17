@@ -1,11 +1,6 @@
 import { getBucket } from "@extend-chrome/storage";
 import { DefaultPrompts, EmptyPrompt, Prompt } from "./prompts";
 
-interface PromptHistory {
-  promptId: string;
-  chatId: string;
-}
-
 type Theme = "light" | "dark";
 
 interface UserPreferences {
@@ -15,17 +10,21 @@ interface UserPreferences {
 export interface Store {
   userPreferences: UserPreferences;
   prompts: Prompt[];
-  selectedPromptId: string;
-  promptsHistory: PromptHistory[];
+  selectedPromptId?: string;
 }
 
 export const localStorage = getBucket<Store>("store");
 
 export async function initialiseLocalStorage() {
+  // Sort disabled prompts to the end of the array
+  const prompts = DefaultPrompts.sort((a, b) => {
+    if (a.active && !b.active) return -1;
+    if (!a.active && b.active) return 1;
+    return 0;
+  });
+
   return localStorage.set({
-    prompts: DefaultPrompts,
-    promptsHistory: [],
-    selectedPromptId: "",
+    prompts,
     userPreferences: {},
   });
 }
@@ -111,7 +110,8 @@ export async function updatePrompt(data: Partial<Prompt>): Promise<Prompt[]> {
     .then(({ prompts }) => prompts);
 }
 
-export async function setSelectedPrompt(id: string) {
+export async function setSelectedPrompt(id?: string) {
+  if (!id) return localStorage.remove("selectedPromptId");
   return localStorage.set({ selectedPromptId: id });
 }
 
@@ -120,6 +120,8 @@ export async function getSelectedPrompt(): Promise<Prompt | undefined> {
   const prompts = await getPrompts();
 
   return (
-    prompts.find((prompt) => prompt.id === selectedPromptId) || EmptyPrompt
+    (selectedPromptId &&
+      prompts.find((prompt) => prompt.id === selectedPromptId)) ||
+    undefined
   );
 }

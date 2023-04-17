@@ -99,14 +99,6 @@ function App() {
     });
   }, []);
 
-  // const sentMessage = async () => {
-  //     console.log('sentMessage sentMessagee');
-  //     let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
-  //
-  //     chrome.tabs.sendMessage(tab.id as number, {greeting: "hello"}, function (response) {
-  //         console.log(response?.farewell);
-  //     });
-  // }
   const addPrompt = () => {
     addNewPrompt().then((prompts) => {
       setPromptsState(prompts);
@@ -132,7 +124,7 @@ function App() {
   return (
     <ThemeProvider>
       <main>
-        <h1>ChatGpt Wizard 🪄</h1>
+        <h1>ChatGpt Prompt Wizard 🪄</h1>
         <h6>v {__APP_VERSION__}</h6>
         <div className="editor-title">
           <h2>Edit your prompts</h2>

@@ -50,7 +50,7 @@ export const hideUiPrompts = (parent: HTMLElement) => {
 
 // UI for selecting prompt
 // Rendered only when user types first message
-export async function updateSelectUI() {
+export function updateSelectUI() {
   if (getUi()) return;
 
   const textarea = getTextarea()!;
