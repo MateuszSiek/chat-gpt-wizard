@@ -1,4 +1,9 @@
 /*
+
+npm run bump -- major # for a major version bump
+npm run bump -- minor # for a minor version bump
+npm run bump -- patch # for a patch version bump
+
 Major version:
 This version should be bumped when you introduce breaking changes to your extension,
 such as significant updates in the functionality or the removal of features.
@@ -20,7 +25,9 @@ require users to adjust their configurations or usage.
 
 import fs from 'fs-extra';
 import path from 'path';
-import {fileURLToPath} from 'url';
+import { fileURLToPath } from 'url';
+import {execa} from 'execa';
+import archiver from 'archiver';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,6 +61,44 @@ if (bumpType === 'major') {
 const newVersionString = `${newVersion.major}.${newVersion.minor}.${newVersion.patch}`;
 
 packageJson.version = newVersionString;
-await fs.writeJson(packageJsonPath, packageJson, {spaces: 2});
+await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
 
 console.log(`Bumped version to: ${newVersionString}`);
+
+try {
+    await execa('git', ['add', 'package.json']);
+    await execa('git', ['commit', '-m', `Bump version to ${newVersionString}`]);
+    await execa('git', ['tag', `-a`, `v${newVersionString}`, '-m', `Version ${newVersionString}`]);
+    console.log(`Created git tag: v${newVersionString}`);
+
+    // Build the app
+    console.log('Building the app...');
+    await execa('npm', ['run', 'build']);
+
+    // Package the build folder into a zip file
+    console.log('Packaging the build folder...');
+    const buildFolderPath = path.join(__dirname, 'build');
+    const outputZipPath = path.join(__dirname, `build-${newVersionString}.zip`);
+    const output = fs.createWriteStream(outputZipPath);
+    const archive = archiver('zip', { zlib: { level: 9 } });
+
+    output.on('close', () => {
+        console.log(`Packaged build folder into: ${outputZipPath}`);
+    });
+
+    archive.on('warning', (warning) => {
+        console.warn('Archive warning:', warning);
+    });
+
+    archive.on('error', (error) => {
+        console.error('Archive error:', error);
+        process.exit(1);
+    });
+
+    archive.pipe(output);
+    archive.directory(buildFolderPath, false);
+    await archive.finalize();
+
+} catch (error) {
+    console.error('Error:', error.message);
+}
