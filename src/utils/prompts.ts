@@ -75,14 +75,35 @@ export const DefaultPrompts = [
     instructions: "Submit a word to receive up to 10 synonyms.",
   },
   {
-    id: "y17gws",
-    name: "Mental Health Adviser",
+    id: "H9x14C",
+    name: "Job interviewer",
     prompt:
-      "I want you to act as a mental health adviser. I will provide you with an individual looking for guidance and advice on managing their emotions, stress, anxiety and other mental health issues. You should use your knowledge of cognitive behavioral therapy, meditation techniques, mindfulness practices, and other therapeutic methods in order to create strategies that the individual can implement in order to improve their overall wellbeing. My first request is: \n",
+      "I want you to act as an interviewer. I will be the candidate and you will ask me the interview questions for the given position. I want you to only reply as the interviewer. Do not write all the conservation at once. I want you to only do the interview with me. Ask me the questions and wait for my answers. Do not write explanations. Ask me the questions one by one like an interviewer does and wait for my answers. The job I'm applying for is: ",
     active: false,
-    placeholder: "Describe your mental health concern...",
+    placeholder: "Enter the job title for the interview...",
     instructions:
-      "Share your mental health concerns and seek guidance and advice.",
+      "Participate in a job interview by providing the job title and answering the interviewer's questions.",
+  },
+  {
+    id: "H9x15C",
+    name: "Code Optimization Help",
+    prompt:
+      "I want you to help me optimize my code for better performance, readability, or maintainability. I'll provide you with a code snippet or a description of the area I'd like to optimize. My current code optimization issue is: \n",
+    active: true,
+    placeholder: "Describe your code optimization issue...",
+    instructions:
+      "Submit your code optimization issue and receive assistance to improve it.",
+  },
+
+  {
+    id: "HGx14C",
+    name: "Code Translation Assistance",
+    prompt:
+      "I want you to help me translate a code snippet or program from one programming language to another. I'll provide you with the code snippet and the target programming language. My current code translation task is: \n",
+    active: true,
+    placeholder: "Provide your code snippet and target language...",
+    instructions:
+      "Submit your code snippet and target language for translation assistance.",
   },
   {
     id: "mZl2Bp",
@@ -95,25 +116,6 @@ export const DefaultPrompts = [
       "Provide a list of comma-separated keywords for generating fancy titles.",
   },
   {
-    id: "RjDN1D",
-    name: "Midjourney Prompt Generator",
-    prompt:
-      "I want you to act as a prompt generator for Midjourney's artificial intelligence program. Your job is to provide detailed and creative descriptions that will inspire unique and interesting images from the AI. Keep in mind that the AI is capable of understanding a wide range of language and can interpret abstract concepts, so feel free to be as imaginative and descriptive as possible. For example, you could describe a scene from a futuristic city, or a surreal landscape filled with strange creatures. The more detailed and imaginative your description, the more interesting the resulting image will be. Here is your first prompt: \n",
-    active: false,
-    placeholder: "Enter a creative and detailed description...",
-    instructions:
-      "Write a detailed, imaginative description to inspire AI-generated images.",
-  },
-  {
-    id: "PcQjhM",
-    name: "Morse Code Translator",
-    prompt:
-      "I want you to act as a Morse code translator. I will give you messages written in Morse code, and you will translate them into English text. Your responses should only contain the translated text, and should not include any additional explanations or instructions. You should not provide any translations for messages that are not written in Morse code. Your first message is: \n",
-    active: false,
-    placeholder: "Enter your Morse code message...",
-    instructions: "Submit a message in Morse code for translation.",
-  },
-  {
     id: "KXKwaO",
     name: "Emoji Translator",
     prompt:
@@ -123,14 +125,14 @@ export const DefaultPrompts = [
     instructions: "Write a sentence to be translated into emojis.",
   },
   {
-    id: "H9x14C",
-    name: "Job interviewer",
+    id: "y17gws",
+    name: "Mental Health Adviser",
     prompt:
-      "I want you to act as an interviewer. I will be the candidate and you will ask me the interview questions for the given position. I want you to only reply as the interviewer. Do not write all the conservation at once. I want you to only do the interview with me. Ask me the questions and wait for my answers. Do not write explanations. Ask me the questions one by one like an interviewer does and wait for my answers. The job I'm applying for is: ",
+      "I want you to act as a mental health adviser. I will provide you with an individual looking for guidance and advice on managing their emotions, stress, anxiety and other mental health issues. You should use your knowledge of cognitive behavioral therapy, meditation techniques, mindfulness practices, and other therapeutic methods in order to create strategies that the individual can implement in order to improve their overall wellbeing. My first request is: \n",
     active: false,
-    placeholder: "Enter the job title for the interview...",
+    placeholder: "Describe your mental health concern...",
     instructions:
-      "Participate in a job interview by providing the job title and answering the interviewer's questions.",
+      "Share your mental health concerns and seek guidance and advice.",
   },
 ];
 
