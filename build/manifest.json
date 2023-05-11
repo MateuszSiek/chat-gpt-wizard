@@ -21,7 +21,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content-script-loader.chunk-03f8e72d.9d1e0bf5.js"
+        "assets/content-script-loader.chunk-86f8d7a2.d4969d6d.js"
       ],
       "matches": [
         "https://chat.openai.com/*"
@@ -50,7 +50,7 @@
       ],
       "resources": [
         "assets/chunk-922fe935.js",
-        "assets/chunk-03f8e72d.js"
+        "assets/chunk-86f8d7a2.js"
       ],
       "use_dynamic_url": true
     }
