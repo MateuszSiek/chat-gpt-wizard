@@ -1,4 +1,4 @@
-import { HijackButtonEvents, HijackKeyboardEvents } from "./button-hijack";
+import { HijackButtonEvents, HijackKeyboardEvents } from "./hijack-input";
 import {
   getButton,
   getChatMessages,

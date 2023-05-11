@@ -3,12 +3,11 @@ import packageJson from '../package.json'
 const { version } = packageJson
 
 export default defineManifest({
-  name: "ChatGPT Prompt Wizard BETA",
+  name: "ChatGPT Prompt Wizard",
   description:
-    "Streamline ChatGPT experience: select saved prompts for efficient control and tailored queries.\n" +
-    "THIS EXTENSION IS FOR BETA TESTING",
+    "Streamline ChatGPT experience: select saved prompts for efficient control and tailored queries.",
   version: version,
-  version_name: version + " beta",
+  version_name: version,
   manifest_version: 3,
   icons: {
     "16": "img/logo-16.png",

@@ -1,8 +1,8 @@
 {
-  "name": "ChatGPT Prompt Wizard BETA",
-  "description": "Streamline ChatGPT experience: select saved prompts for efficient control and tailored queries.\nTHIS EXTENSION IS FOR BETA TESTING",
-  "version": "0.2.0",
-  "version_name": "0.2.0 beta",
+  "name": "ChatGPT Prompt Wizard",
+  "description": "Streamline ChatGPT experience: select saved prompts for efficient control and tailored queries.",
+  "version": "1.0.0",
+  "version_name": "1.0.0",
   "manifest_version": 3,
   "icons": {
     "16": "img/logo-16.png",

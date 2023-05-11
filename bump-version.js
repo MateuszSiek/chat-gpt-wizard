@@ -66,7 +66,7 @@ await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
 console.log(`Bumped version to: ${newVersionString}`);
 
 try {
-    await execa('git', ['add', 'package.json']);
+    await execa('git', ['add', '.']);
     await execa('git', ['commit', '-m', `Bump version to ${newVersionString}`]);
     await execa('git', ['tag', `-a`, `v${newVersionString}`, '-m', `Version ${newVersionString}`]);
     console.log(`Created git tag: v${newVersionString}`);
