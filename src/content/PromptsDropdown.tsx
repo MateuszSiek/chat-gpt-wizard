@@ -9,6 +9,23 @@ import {
 } from "../utils/local-storage";
 import { html } from "htm/preact";
 import { Changes } from "@extend-chrome/storage";
+import { handleKeyboardPromptChange } from "./util";
+
+function DropdownOption({
+  prompt,
+  index,
+  selected,
+}: {
+  prompt: Prompt;
+  index: number;
+  selected?: boolean;
+}) {
+  const prefix = index < 9 ? `[${index + 1}] ` : "";
+  const displayName = prefix + prompt.name;
+  return html` <option value="${prompt.id}" selected=${selected && "selected"}>
+    ${displayName}
+  </option>`;
+}
 
 export default function PromptsDropdown({
   onChange,
@@ -36,7 +53,7 @@ export default function PromptsDropdown({
   }, []);
 
   useEffect(() => {
-    if (localStorageUpdate?.selectedPromptId?.newValue) {
+    if (localStorageUpdate?.selectedPromptId) {
       const prompt = prompts?.find(
         ({ id }) => id === localStorageUpdate?.selectedPromptId?.newValue
       );
@@ -57,31 +74,30 @@ export default function PromptsDropdown({
   const SELECT_CLASS =
     "chat-gpt-wizard--select cursor-default rounded-md border border-black/10 bg-white text-left focus:border-green-600 focus:outline-none focus:ring-1 focus:ring-green-600 dark:border-white/20 dark:bg-gray-800 sm:text-sm";
   return html`
-    <div class="chat-gpt-wizard--select-wrapper">
+    <div
+      class="chat-gpt-wizard--select-wrapper"
+      onKeyDown=${handleKeyboardPromptChange}
+    >
       <div
-        class="chat-gpt-wizard--select-label text-xs text-gray-700 dark:text-gray-500"
+        class="chat-gpt-wizard--select-label text-xs text-gray-700 dark:text-gray-600"
       >
         Select prompt
       </div>
       <select onChange=${handleChange} class=${SELECT_CLASS}>
         <option value="" selected=${!selected?.id && "selected"}></option>
-        ${prompts.map(
-          ({ name, id }: Prompt) => html` <option
-            value="${id}"
-            selected=${selected?.id === id && "selected"}
-          >
-            ${name}
-          </option>`
+        ${prompts.map((prompt: Prompt, index) =>
+          DropdownOption({
+            prompt,
+            index,
+            selected: selected?.id === prompt.id,
+          })
         )}
       </select>
-      ${selected?.instructions &&
-      html`
-        <div
-          class="chat-gpt-wizard--select-instructions text-xs text-black/50 dark:text-white/50"
-        >
-          ${selected.instructions}
-        </div>
-      `}
+      <div
+        class="chat-gpt-wizard--select-instructions dark:text-gray-500 text-xs text-black/50"
+      >
+        ${selected?.instructions} ‎
+      </div>
     </div>
   `;
 }

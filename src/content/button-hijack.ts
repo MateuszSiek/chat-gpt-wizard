@@ -1,8 +1,14 @@
 import { Prompt } from "../utils/prompts";
-import { getSelectedPrompt, localStorage } from "../utils/local-storage";
+import {
+  getActivePrompts,
+  getPrompts,
+  getSelectedPrompt,
+  localStorage,
+  setSelectedPrompt,
+} from "../utils/local-storage";
 import { getChatMessages, getTextarea } from "./selectors";
 import { removeSelectUI } from "./ui-manipulation";
-import { PROMPT_WRAPPER_TEXT } from "./util";
+import { handleKeyboardPromptChange, PROMPT_WRAPPER_TEXT } from "./util";
 
 let inputRef: HTMLTextAreaElement;
 let buttonRef: HTMLButtonElement;
@@ -41,6 +47,7 @@ function HijackKeyboardEvents(input: HTMLTextAreaElement) {
     if (event.key === "Enter" && !event.shiftKey) {
       onSubmit();
     }
+    handleKeyboardPromptChange(event);
   }
 
   input.addEventListener("keydown", eventListener, true);

@@ -1,3 +1,4 @@
+import { getActivePrompts, setSelectedPrompt } from "../utils/local-storage";
 import css from "./index.css";
 
 export const PROMPT_WRAPPER_TEXT = "‏‏‎ ‎";
@@ -28,5 +29,25 @@ export function getCurrentChatId(): string | undefined {
 
   if (match && match[1]) {
     return match[1];
+  }
+}
+
+export function handleKeyboardPromptChange(event: KeyboardEvent) {
+  // select prompt, when ctrl + number is pressed
+  // when ctrl + 0 is pressed, unselect the prompt
+  if (event.ctrlKey || event.metaKey) {
+    const number = parseInt(event.key);
+    if (number >= 0 && number <= 9) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (number === 0) {
+        setSelectedPrompt();
+        return;
+      }
+      getActivePrompts().then((prompts) => {
+        const prompt = prompts[number - 1];
+        setSelectedPrompt(prompt?.id);
+      });
+    }
   }
 }
