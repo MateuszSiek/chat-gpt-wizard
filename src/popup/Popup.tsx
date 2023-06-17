@@ -2,118 +2,32 @@ import "./Popup.css";
 import { useEffect, useState } from "react";
 import {
   addNewPrompt,
-  getPreferredTheme,
   getPrompts,
   removePrompt,
-  setPreferredTheme,
   setPrompts,
   updatePrompt,
 } from "../utils/local-storage";
-import { PromptsAccordion } from "./Accordion";
-import {
-  Button,
-  ColorScheme,
-  ColorSchemeProvider,
-  MantineProvider,
-} from "@mantine/core";
+import { PromptsAccordion } from "./prompts_accordion";
+import { Button } from "@mantine/core";
 import { Prompt } from "../utils/prompts";
-import { useColorScheme } from "@mantine/hooks";
-import { IconButton } from "./Icon";
-
-function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const preferredColorScheme = useColorScheme();
-  const [colorScheme, setColorScheme] =
-    useState<ColorScheme>(preferredColorScheme);
-
-  const isDarkTheme = colorScheme === "dark";
-  const toggleColorScheme = () => {
-    const newTheme = isDarkTheme ? "light" : "dark";
-    setColorScheme(newTheme);
-    setPreferredTheme(newTheme).then(() => {});
-  };
-
-  useEffect(() => {
-    getPreferredTheme().then((theme) => {
-      if (theme && theme !== colorScheme) {
-        setColorScheme(theme);
-      }
-    });
-  }, []);
-
-  return (
-    <ColorSchemeProvider
-      colorScheme={colorScheme}
-      toggleColorScheme={toggleColorScheme}
-    >
-      <MantineProvider
-        withGlobalStyles
-        withCSSVariables
-        theme={{
-          colorScheme: colorScheme,
-          colors: {
-            dark: [
-              "#d5d7e0",
-              "#acaebf",
-              "#8c8fa3",
-              "#666980",
-              "#4d4f66",
-              "#34354a",
-              "#343541",
-              "#2a2b33",
-              "#0c0d21",
-              "#01010a",
-            ],
-          },
-        }}
-      >
-        <div className={colorScheme + "-theme"}>
-          <div className="theme-switcher-buttons">
-            {isDarkTheme && (
-              <IconButton
-                onClick={toggleColorScheme}
-                name="sun"
-                alt="Toggle color scheme"
-              />
-            )}
-            {!isDarkTheme && (
-              <IconButton
-                onClick={toggleColorScheme}
-                name="moon"
-                alt="Toggle color scheme"
-              />
-            )}
-          </div>
-          {children}
-        </div>
-      </MantineProvider>
-    </ColorSchemeProvider>
-  );
-}
+import ThemeProvider from "./ThemeProvider";
 
 function App() {
   const [promptsState, setPromptsState] = useState<Prompt[]>([]);
 
   useEffect(() => {
-    getPrompts().then((prompts) => {
-      setPromptsState(prompts);
-    });
+    getPrompts().then(setPromptsState);
   }, []);
 
   const addPrompt = () => {
-    addNewPrompt().then((prompts) => {
-      setPromptsState(prompts);
-    });
+    addNewPrompt().then(setPromptsState);
   };
   const remove = (id: string) => {
-    removePrompt(id).then((prompts) => {
-      setPromptsState(prompts);
-    });
+    removePrompt(id).then(setPromptsState);
   };
 
   const update = (data: Partial<Prompt>) => {
-    updatePrompt(data).then((prompts) => {
-      setPromptsState(prompts);
-    });
+    updatePrompt(data).then(setPromptsState);
   };
 
   const set = (data: Prompt[]) => {
@@ -146,5 +60,3 @@ function App() {
 }
 
 export default App;
-
-// chrome-extension://affnpgjnnjpbnbbeeffbnbgngapdlihf/popup.html

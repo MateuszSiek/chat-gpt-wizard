@@ -110,6 +110,9 @@ npm run bump -- patch # for a patch version bump
 ```
 More details can be found in the `bump-version.js` file.
 
+## Note on Testing
+Please note that there are currently no unit tests for this project as it was initially conceived as a short and experimental project. However, unit tests are planned to be added in the near future to ensure the robustness of the extension.
+
 ## License
 This project is licensed under the MIT License.
 

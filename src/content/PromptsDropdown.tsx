@@ -11,15 +11,15 @@ import { html } from "htm/preact";
 import { Changes } from "@extend-chrome/storage";
 import { handleKeyboardPromptChange } from "./util";
 
-function DropdownOption({
-  prompt,
-  index,
-  selected,
-}: {
+interface DropdownOptionProps {
   prompt: Prompt;
   index: number;
   selected?: boolean;
-}) {
+}
+
+// Component to render each dropdown option
+function DropdownOption({ prompt, index, selected }: DropdownOptionProps) {
+  // Additional prefix for the keyboard shortcut
   const prefix = index < 9 ? `[${index + 1}] ` : "";
   const displayName = prefix + prompt.name;
   return html` <option value="${prompt.id}" selected=${selected && "selected"}>
@@ -27,11 +27,11 @@ function DropdownOption({
   </option>`;
 }
 
-export default function PromptsDropdown({
-  onChange,
-}: {
+interface DropdownProps {
   onChange: (prompt?: Prompt) => void;
-}) {
+}
+
+export default function PromptsDropdown({ onChange }: DropdownProps) {
   const [prompts, setPrompts] = useState<Prompt[]>([]);
   const [selected, setSelected] = useState<Prompt | undefined>();
   const [localStorageUpdate, setLocalStorageUpdate] =
@@ -43,15 +43,15 @@ export default function PromptsDropdown({
     });
   };
 
+  // Initialize state and subscribe to local storage changes
   useEffect(() => {
     setLatestPrompts();
-    getSelectedPrompt().then((prompt) => {
-      setSelected(prompt);
-    });
+    getSelectedPrompt().then(setSelected);
     const sub = localStorage.changeStream.subscribe(setLocalStorageUpdate);
     return () => sub.unsubscribe();
   }, []);
 
+  // Handle local storage updates
   useEffect(() => {
     if (localStorageUpdate?.selectedPromptId) {
       const prompt = prompts?.find(

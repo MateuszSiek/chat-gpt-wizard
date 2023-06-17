@@ -17,22 +17,24 @@ import {
 
 console.info("ChatGPT Prompt Wizard loaded");
 
-const hijackEvents = () => {
+function hijackEvents() {
   const button = getButton();
   const textarea = getTextarea();
   if (!button || !textarea) return;
 
-  HijackButtonEvents(button);
-  HijackKeyboardEvents(textarea);
-};
+  HijackButtonEvents(button); // hijack button click event
+  HijackKeyboardEvents(textarea); // hijack keyboard "Enter" event
+}
 
 export function updateUI() {
-  const button = getButton();
-  const textarea = getTextarea();
+  const subtmitButton = getButton();
+  const inputTextarea = getTextarea();
   const chatMessages = getChatMessages();
 
   hideUiPrompts(getRootElement());
 
+  // If there are chat messages, remove the UI for prompt selection
+  // the select UI is only available for the first message
   if (chatMessages.length > 0) {
     removeSelectUI();
     return;
@@ -40,18 +42,20 @@ export function updateUI() {
 
   hijackEvents();
 
-  if (button && textarea) {
+  if (subtmitButton && inputTextarea) {
     removeInfoUI();
     updateSelectUI();
   }
 }
 
+// Initial call to update/create the UI
 updateUI();
 const rootEl = getRootElement();
-const form = document.querySelector("form");
 try {
-  new MutationObserver((mutationsList) => {
+  const observer = new MutationObserver((mutationsList) => {
+    // Update UI with each mutation
     updateUI();
+
     for (const mutation of mutationsList) {
       if (mutation.type === "childList") {
         const addedNodes = Array.from(mutation.addedNodes);
@@ -66,13 +70,16 @@ try {
         });
       }
     }
-  }).observe(rootEl, { childList: true, subtree: true });
+  });
+
+  // Start observing the root element with configuration
+  // This observer is quite aggressive - it observes a lot of elements to ensure that the custom extension
+  // UI isn't removed or doesn't malfunction due to updates on the chatGPT website.
+  observer.observe(rootEl, { childList: true, subtree: true });
 } catch (e: any) {
   console.info("ChatGptWizard error --> Could not update UI:\n", e.stack);
 }
 
-window.addEventListener("hashchange", function (event) {
-  updateUI();
-});
+window.addEventListener("hashchange", updateUI);
 
 export {};
